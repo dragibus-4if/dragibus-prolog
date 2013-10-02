@@ -18,3 +18,10 @@ descendance(X) :- setof(X, ancetre(_, X), T).
 
 % ?- setof(X, ancetre(jean, X), T).
 % ?- setof(X, ancetre(X, herve), T).
+
+len([], 0).
+len([_|Q], N) :- len(Q, N1), N is N1 + 1.
+
+element(_, [], []).
+element(T, [T|Q], [H|L]) :- T \== H, element(T, Q, [H|L]).
+element(X, [T|Q], [T|L]) :- X \== T, element(X, Q, L).
