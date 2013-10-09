@@ -1,0 +1,5 @@
+
+
+
+
+iajoue(X) :- read(X).
