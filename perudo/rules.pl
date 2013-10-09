@@ -20,7 +20,7 @@ partie_finie(2) :- table(_, joueur(0, _)), !.
 
 % pas() :- perdu, .
 % pas() :- ..., pas.
-% 
+%
 % jeu() :- init, pas
 
 coup(mise(_, _)).
@@ -37,3 +37,5 @@ lsCoupInit(L) :- setof(X, coupInit(X), L).
 lsCoupPossible(M, L) :- setof(X, coupPossible(M, X), L).
 
 % lsCoupPossible(mise(Nbr, Val)) :- setof(X, coupPossible(mise(Nbr, Val, X), ).
+
+% vim: ft=prolog et sw=2 sts=2
