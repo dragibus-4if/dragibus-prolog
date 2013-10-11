@@ -1,5 +1,5 @@
 % lit une ligne depuis l'entrée standard
-lire_ligne(X) :-
+lireLigne(X) :-
   read_line_to_codes(user_input, X),
   X \= end_of_line, X \= end_of_file.
 
@@ -7,12 +7,12 @@ lire_ligne(X) :-
 repeter.
 repeter(P) :- P ; repeter(P).
 
-lire_nombre(X) :-
-  write('Entrez en nombre: '), lire_ligne(Ligne),
+lireNombre(X) :-
+  write('Entrez en nombre: '), lireLigne(Ligne),
   catch(number_chars(X, Ligne), _, fail).
 
 main :-
-  repeter(lire_nombre(X)),
+  repeter(lireNombre(X)),
   write('Vous avez entré: '), write(X).
 
 % vim: ft=prolog et sw=2 sts=2

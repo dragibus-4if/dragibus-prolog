@@ -11,13 +11,15 @@ tirage(N, [T|Q]) :-
   N1 is N - 1,
   tirage(N1, Q).
 
-% TODO données du jeu
+% Données du jeu
+%  - table -> liste des joueurs
+%  - état de jeu -> mise, table
 % joueur(L) :- tirage(5, L).
 % joueur(N, L).
 % table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
 %etat_jeu(, la_mise, ).
 
-% TODO Initialisation du jeu.
+% Initialisation du jeu.
 % Doit créer dynamique des règles et des prédicats définissant l'état du jeu.
 % init(mise(0, 0), joueur(N1, L1), joueur(N2, L2)) :-
 %   tirage(N1, L1),
@@ -100,9 +102,9 @@ playTurn(Mise) :-
 % jeu() :- init, pas
 
 % Définition d'un mise et règle de validation.
-% Une mise est un nombre N de dé d'un valeur V.
-% Le nombre doit etre dans [1, NBR_DE]
-% La valeur doit etre dans [1, 6]
+%  - une mise est un nombre N de dés d'un valeur V.
+%  - le nombre doit être dans [1, NBR_DE]
+%  - la valeur doit être dans [1, 6]
 mise(N, V) :-
   between(1, 10, N),
   between(1, 6, V).
@@ -126,7 +128,7 @@ coupPossible(mise(_, _), dudo).
 coupPossible(mise(_, _), calza).
 coupPossible(mise(N1, V), mise(N2, V)) :-
   N is N1 + 1,
-  between(N, 10, N2).
+  between(N, 10, N2). % TODO modifier 10 -> nombre de dés
 coupPossible(mise(N, V1), mise(N, V2)) :-
   V is V1 + 1,
   between(V, 6, V2).
