@@ -4,21 +4,17 @@ use_module(library(apply)).
 
 :- [ia].
 
-% Un dé est représenté par une valeur aléatoire entre 1 et 6.
-de(N) :- random(1, 7, N).
-
 % Un tirage est une liste de taille définie composée de dé.
-tirage(0, []).
+tirage(0, []) :- !.
 tirage(N, [T|Q]) :-
-  de(T),
+  random(1, 7, T),
   N1 is N - 1,
-  tirage(N1, Q),
-  !.
+  tirage(N1, Q).
 
 % TODO données du jeu
 % joueur(L) :- tirage(5, L).
-joueur(N, L).
-table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
+% joueur(N, L).
+% table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
 %etat_jeu(, la_mise, ).
 
 % TODO Initialisation du jeu.
@@ -27,9 +23,76 @@ table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
 %   tirage(N1, L1),
 %   tirage(N2, L2).
 
+:- dynamic stateGame/1.
+
+createPlayer(Id, NbrDe, Res) :-
+  tirage(NbrDe, L),
+  Res = player(Id, L).
+createPlayer(Id, Res) :- createPlayer(Id, 5, Res).
+
+shufflePlayer(player(Id, L), Res) :-
+  length(L, N),
+  createPlayer(Id, N, Res).
+
+initialiseGame(LsPlayerId) :-
+  write('Initialisation de la partie\n'),
+  retractall(stateGame(_)),
+  maplist(createPlayer, LsPlayerId, L),
+  assert(stateGame(L)).
+
+initialiseTurn :-
+  write('Nouveau tour de jeu\n'),
+  stateGame(L),
+  retractall(stateGame(_)),
+  include(playerAlive, L, L2),
+  maplist(shufflePlayer, L2, X),
+  assert(stateGame(X)).
+
 % Indique le numéro du joueur qui a fini la partie
-partie_finie(1) :- table(joueur(0, _), _), !.
-partie_finie(2) :- table(_, joueur(0, _)), !.
+playerDead(player(_, [])).
+playerAlive(P) :- not(playerDead(P)).
+endOfGame :-
+  stateGame(L),
+  length(L, N),
+  N == 1.
+
+currentPlayer(P) :-
+  stateGame(L),
+  nth1(1, L, P).
+
+playerPlay(_, LsCoup, Coup) :-
+  iajoue(LsCoup, N),
+  nth1(N, LsCoup, Mise),
+  Coup = coup(Mise),
+  write(Coup),
+  write('\n').
+
+game :-
+  L = ['John', 'Roger', 'Marc'],
+  initialiseGame(L),
+  playTurn(init).
+
+% playTurn(_) :- endOfGame, !.
+playTurn(init) :-
+  initialiseTurn,
+  currentPlayer(P),
+  lsCoupInit(L),
+  playerPlay(P, L, Coup),
+  %nextPlayer,
+  Coup = coup(M),
+  write('Mise = '), write(M), write('\n'),
+  playTurn(M).
+
+playTurn(Mise) :-
+  write('Tour suivant\n'),
+  currentPlayer(P),
+  lsCoupPossible(Mise, L),
+  playerPlay(P, L, Coup),
+  %traiter le coup
+  %nextPlayer,
+  Coup = coup(M),
+  write('Mise = '), write(M), write('\n'),
+  playTurn(M).
 
 % pas() :- perdu, .
 % pas() :- ..., pas.
@@ -83,7 +146,7 @@ jouer(Min, Mout) :-
   nth1(Index, L, Mout).
 
 % Calcul le nombre de dé de valeur V sur la table
-pred(V, 1).
+pred(_, 1).
 pred(V, V).
 nbrde(V, N) :-
   table(joueur(_, L1), joueur(_, L2)),
@@ -101,8 +164,8 @@ calza(mise(N, V)) :-
   nbrde(V, N1),
   N1 == N.
 
-misajour(dudo).
-misajour(calza).
-misajour(M).
+% misajour(dudo).
+% misajour(calza).
+% misajour(_).
 
 % vim: ft=prolog et sw=2 sts=2
