@@ -1,4 +1,3 @@
-use_module(library(random)).
 use_module(library(lists)).
 use_module(library(apply)).
 
@@ -25,38 +24,6 @@ tirage(N, [T|Q]) :-
 %   tirage(N1, L1),
 %   tirage(N2, L2).
 
-:- dynamic stateGame/1.
-
-createPlayer(Id, NbrDe, Res) :-
-  tirage(NbrDe, L),
-  Res = player(Id, L).
-createPlayer(Id, Res) :- createPlayer(Id, 5, Res).
-
-shufflePlayer(player(Id, L), Res) :-
-  length(L, N),
-  createPlayer(Id, N, Res).
-
-initialiseGame(LsPlayerId) :-
-  write('Initialisation de la partie\n'),
-  retractall(stateGame(_)),
-  maplist(createPlayer, LsPlayerId, L),
-  assert(stateGame(L)).
-
-initialiseTurn :-
-  write('Nouveau tour de jeu\n'),
-  stateGame(L),
-  retractall(stateGame(_)),
-  include(playerAlive, L, L2),
-  maplist(shufflePlayer, L2, X),
-  assert(stateGame(X)).
-
-% Indique le numéro du joueur qui a fini la partie
-playerDead(player(_, [])).
-playerAlive(P) :- not(playerDead(P)).
-endOfGame :-
-  stateGame(L),
-  length(L, N),
-  N == 1.
 
 currentPlayer(P) :-
   stateGame(L),
@@ -64,10 +31,8 @@ currentPlayer(P) :-
 
 playerPlay(_, LsCoup, Coup) :-
   iajoue(LsCoup, N),
-  nth1(N, LsCoup, Mise),
-  Coup = coup(Mise),
-  write(Coup),
-  write('\n').
+  nth1(N, LsCoup, Bet),
+  Coup = coup(Bet).
 
 game :-
   L = ['John', 'Roger', 'Marc'],
@@ -81,20 +46,20 @@ playTurn(init) :-
   lsCoupInit(L),
   playerPlay(P, L, Coup),
   %nextPlayer,
-  Coup = coup(M),
-  write('Mise = '), write(M), write('\n'),
-  playTurn(M).
+  Coup = coup(B),
+  write('Bet = '), write(B), write('\n'),
+  playTurn(B).
 
-playTurn(Mise) :-
+playTurn(Bet) :-
   write('Tour suivant\n'),
   currentPlayer(P),
-  lsCoupPossible(Mise, L),
+  lsCoupPossible(Bet, L),
   playerPlay(P, L, Coup),
   %traiter le coup
   %nextPlayer,
-  Coup = coup(M),
-  write('Mise = '), write(M), write('\n'),
-  playTurn(M).
+  Coup = coup(B),
+  write('Bet = '), write(B), write('\n'),
+  playTurn(B).
 
 % pas() :- perdu, .
 % pas() :- ..., pas.
