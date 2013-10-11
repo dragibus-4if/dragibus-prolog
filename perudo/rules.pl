@@ -2,7 +2,7 @@ use_module(library(random)).
 use_module(library(lists)).
 use_module(library(apply)).
 
-:- [ia].
+use_module(ia).
 
 % Un dé est représenté par une valeur aléatoire entre 1 et 6.
 de(N) :- random(1, 7, N).
@@ -15,21 +15,23 @@ tirage(N, [T|Q]) :-
   tirage(N1, Q),
   !.
 
-% TODO données du jeu
+% Données du jeu
+%  - table -> liste des joueurs
+%  - état de jeu -> mise, table
 % joueur(L) :- tirage(5, L).
-joueur(N, L).
-table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
+joueur(_, _).
+%table(joueur(5, [1, 2, 3, 4, 0]), joueur(5, [0, 0, 0, 0, 0])).
 %etat_jeu(, la_mise, ).
 
-% TODO Initialisation du jeu.
+% Initialisation du jeu.
 % Doit créer dynamique des règles et des prédicats définissant l'état du jeu.
 % init(mise(0, 0), joueur(N1, L1), joueur(N2, L2)) :-
 %   tirage(N1, L1),
 %   tirage(N2, L2).
 
 % Indique le numéro du joueur qui a fini la partie
-partie_finie(1) :- table(joueur(0, _), _), !.
-partie_finie(2) :- table(_, joueur(0, _)), !.
+partieFinie(1) :- table(joueur(0, _), _), !.
+partieFinie(2) :- table(_, joueur(0, _)), !.
 
 % pas() :- perdu, .
 % pas() :- ..., pas.
@@ -37,9 +39,9 @@ partie_finie(2) :- table(_, joueur(0, _)), !.
 % jeu() :- init, pas
 
 % Définition d'un mise et règle de validation.
-% Une mise est un nombre N de dé d'un valeur V.
-% Le nombre doit etre dans [1, NBR_DE]
-% La valeur doit etre dans [1, 6]
+%  - une mise est un nombre N de dés d'un valeur V.
+%  - le nombre doit être dans [1, NBR_DE]
+%  - la valeur doit être dans [1, 6]
 mise(N, V) :-
   between(1, 10, N),
   between(1, 6, V).
@@ -63,7 +65,7 @@ coupPossible(mise(_, _), dudo).
 coupPossible(mise(_, _), calza).
 coupPossible(mise(N1, V), mise(N2, V)) :-
   N is N1 + 1,
-  between(N, 10, N2).
+  between(N, 10, N2). % TODO modifier 10 -> nombre de dés
 coupPossible(mise(N, V1), mise(N, V2)) :-
   V is V1 + 1,
   between(V, 6, V2).
@@ -83,7 +85,7 @@ jouer(Min, Mout) :-
   nth1(Index, L, Mout).
 
 % Calcul le nombre de dé de valeur V sur la table
-pred(V, 1).
+pred(_, 1).
 pred(V, V).
 nbrde(V, N) :-
   table(joueur(_, L1), joueur(_, L2)),
@@ -103,6 +105,6 @@ calza(mise(N, V)) :-
 
 misajour(dudo).
 misajour(calza).
-misajour(M).
+misajour(_).
 
 % vim: ft=prolog et sw=2 sts=2
