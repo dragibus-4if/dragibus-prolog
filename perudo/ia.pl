@@ -1,5 +1,3 @@
-use_module(library(pairs)).
-
 iajoue(L, X) :- write(L), write('\n'), read(X).
 
 % compter le nombre d'occurences d'un élément dans une liste
@@ -19,11 +17,5 @@ desVersTirage(Des, Tirage) :-
 %  NombreAutresDes is N - NombreMesDes.
 
 second([_, Y], Y).
-
-main :-
-  desVersTirage([3, 1, 1, 5, 5], Tirage),
-  map_list_to_pairs(second, Tirage, Pairs),
-  keysort(Pairs, TirageTrié),
-  write(TirageTrié).
 
 % vim: ft=prolog et sw=2 sts=2

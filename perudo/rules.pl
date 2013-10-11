@@ -2,7 +2,7 @@ use_module(library(random)).
 use_module(library(lists)).
 use_module(library(apply)).
 
-use_module(ia).
+:- [ia].
 
 % Un dé est représenté par une valeur aléatoire entre 1 et 6.
 de(N) :- random(1, 7, N).
