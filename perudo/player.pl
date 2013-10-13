@@ -26,4 +26,27 @@ playerIsDead(player(_, [])).
 playerIsAlive(P) :-
     not(playerIsDead(P)).
 
+% Vrai si le joueur P a les dés Dices
+playerDices(P, Dices) :-
+  P = player(_, Dices).
+
+% Vrai si le joueur NP est le meme que P avec le premier dé en moins.
+playerRemoveDice(P, NP) :-
+  P = player(Id, D),
+  append([_], Dices, D),
+  NP = player(Id, Dices).
+
+% Vrai si le joueur P à 5 dé.
+playerAddDice(P, P) :-
+  P = player(_, D),
+  length(D, 5),
+  !.
+
+% Vrai si le joueur NP est le joueur P avec un dé en plus de valeur 0 comme
+% premier dé. Un joueur ne peux avoir plus de 5 dés.
+playerAddDice(P, NP) :-
+  P = player(Id, D),
+  append([0], D, Dices),
+  NP = player(Id, Dices).
+
 % vim: ft=prolog et sw=2 sts=2

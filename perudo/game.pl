@@ -12,9 +12,9 @@ gameShow(Game) :-
 % Crée un jeu et le lance en créant les joueurs données dans la liste Names.
 % Faux et arrete si la liste des noms comporte des doublons.
 % Faux si la liste est vide
-gameCreate([]) :- fail.
+gameCreate([]) :- !, fail.
 gameCreate(Names) :-
-  Names \= [],
+  % Names \= [],
   is_set(Names),
   maplist(playerCreate, Names, Game),
   write('Creation de la partie\n'),
