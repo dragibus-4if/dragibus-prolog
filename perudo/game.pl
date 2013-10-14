@@ -24,50 +24,62 @@ gameCreate(Names) :-
   gameNewTurn(Game).
 
 % Débute un nouveau tour à partir de l'état Game puis continue le jeu.
-gameNewTurn(Game) :-
+gameInitNewTurn(Game) :-
   include(playerIsAlive, Game, L),
   maplist(playerShuffle, L, NGame),
-  write('Nouveau tour de jeu\n'),
-  gameShow(NGame),
-  rulesPossibleMoves(Moves),
-  iaJoue(Moves, B),
-  rulesMove(B),
-  gameTurn(NGame, B).
+  gameNewTurn(NGame).
 
-gameTurn(Game, dudo) :-
-  write('Tu bluff gros porc\n'),
-  % TODO: A Traiter
-  gameNewTurn(Game),
+gameNewTurn([P]) :-
+  playerId(P, X),
+  write(X),
+  write(' dit : Game over motherfucker\n'),
   !.
 
-gameTurn(Game, calza) :-
+gameNewTurn(Game) :-
+  write('Nouveau tour de jeu\n'),
+  gameShow(Game),
+  gameNbrDice(NGame, NbrDice),
+  rulesPossibleMoves(Moves, NbrDice),
+  nth1(1, NGame, P),
+  playerDices(P, PDices),
+  iaAutiste(PDices, NbrDice, _, Moves, B),
+  rulesMove(B),
+  gameTurn(Game, _, B).
+
+gameTurn(Game, Bet, dudo) :-
+  write('Tu bluff gros porc\n'),
+  rulesDudo(Bet, Game, NGame),
+  gameInitNewTurn(NGame),
+  !.
+
+gameTurn(Game, Bet, calza) :-
   write('J\'ai des boules moi\n'),
-  % TODO: A Traiter
-  gameNewTurn(Game),
+  rulesCalza(Bet, Game, NGame),
+  gameInitNewTurn(NGame),
   !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, Bet) :-
-  gameNextPlayer(Game, NGame),
+gameTurn(Game, OldBet, Bet) :-
+  rulesNextPlayer(Game, NGame),
   write('Au prochain de jouer avec la mise : '),
   write(Bet),
   write('\n'),
-  gameShow(Game),
-  rulesPossibleMoves(Bet, Moves),
-  iaJoue(Moves, B),
+  gameShow(NGame),
+  gameNbrDice(NGame, NbrDice),
+  rulesPossibleMoves(Bet, NbrDice, Moves),
+  nth1(1, NGame, P),
+  playerDices(P, PDices),
+  iaAutiste(PDices, NbrDice, OldBet, Moves, B),
   rulesMove(B),
-  gameTurn(NGame, B).
-
-% Vrai si les deux listes sont les memes à l'exception que la tete de Game
-% est le dernier élément de NGame.
-% Représente la circulation du joueur en état de parler dans le jeu.
-gameNextPlayer(Game, NGame) :-
-  nth1(1, Game, P),
-  append([P], L, Game),
-  append(L, [P], NGame).
+  gameTurn(NGame, Bet, B).
 
 % Vrai s'il ne reste qu'un seul joueur dans le jeu.
 gameIsOver(Game) :-
   length(Game, 1).
+
+gameNbrDice(Game, Nbr) :-
+  maplist(playerDices, Game, D),
+  flatten(D, R),
+  length(R, Nbr).
 
 % vim: ft=prolog et sw=2 sts=2

@@ -13,6 +13,9 @@ playerCreate(Id, NbDice, Res) :-
   length(L, NbDice),
   Res = player(Id, L), !.
 
+playerId(P, Id) :-
+  P = player(Id, _).
+
 % Vrai si Res est un player(Id, L2) avec L2 une liste de la meme taille que
 % L et remplie de nombres aléatoires entre 1 et 6 compris.
 playerShuffle(player(Id, L), Res) :-

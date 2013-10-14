@@ -53,7 +53,8 @@ meilleurCoups(DesTries, [MeilleurCoup]) :-
 %   5) Coup choisi par l'IA
 iaAutiste(_, _, _, CoupsPossibles, Coup) :-
   length(CoupsPossibles, NbCoupsPossibles),
-  random(0, NbCoupsPossibles, Coup).
+  random(1, NbCoupsPossibles, N),
+  nth1(N, CoupsPossibles, Coup).
 
 iaStats(Des, N, mise(Nbr, Val), CoupsPossibles, Coup) :-
   length(Des, NombreMesDes),

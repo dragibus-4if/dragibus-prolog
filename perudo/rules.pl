@@ -8,6 +8,10 @@ rulesBet(Nbr, Value) :-
   between(1, 6, Value),
   between(1, 30, Nbr).
 
+rulesBet(Nbr, Value, NbrDice) :-
+  between(1, 6, Value),
+  between(1, NbrDice, Nbr).
+
 rulesMove(dudo).
 rulesMove(calza).
 rulesMove(Bet) :-
@@ -31,28 +35,41 @@ rulesNbrDice(Players, Val, Nbr) :-
 rulesNbrDicePalifico(Players, Val, Nbr) :-
   rulesNbrDice_(Players, Val, Nbr).
 
-rulesPossibleMove(rulesBet(N, V)) :-
+rulesPossibleMove(NbrDice, rulesBet(N, V)) :-
     between(2, 6, V),
-    rulesBet(N, V).
+    rulesBet(N, V, NbrDice).
 
-rulesPossibleMove(rulesBet(_, _), dudo).
-rulesPossibleMove(rulesBet(_, _), calza).
+rulesPossibleMove(rulesBet(_, _), _, dudo).
+rulesPossibleMove(rulesBet(_, _), _, calza).
 
-rulesPossibleMove(rulesBet(N, V1), rulesBet(N, V2)) :-
+rulesPossibleMove(rulesBet(N, V1), NbrDice, rulesBet(N, V2)) :-
     V is V1 + 1,
     between(V, 6, V2),
-    rulesBet(N, V2).
+    rulesBet(N, V2, NbrDice).
 
-rulesPossibleMove(rulesBet(N1, V), rulesBet(N2, V)) :-
+rulesPossibleMove(rulesBet(N1, V), NbrDice, rulesBet(N2, V)) :-
     N is N1 + 1,
     between(N, 30, N2),
-    rulesBet(N2, V).
+    rulesBet(N2, V, NbrDice).
 
-rulesPossibleMoves(Bet, Moves) :-
-    setof(X, rulesPossibleMove(Bet, X), Moves).
+rulesPossibleMoves(Bet, NbrDice, Moves) :-
+    setof(X, rulesPossibleMove(Bet, NbrDice, X), Moves).
 
-rulesPossibleMoves(Moves) :-
-    setof(X, rulesPossibleMove(X), Moves).
+rulesPossibleMoves(Moves, NbrDice) :-
+    setof(X, rulesPossibleMove(NbrDice, X), Moves).
+
+% Vrai si les deux listes sont les memes à l'exception que la tete de Game
+% est le dernier élément de NGame.
+% Représente la circulation du joueur en état de parler dans le jeu.
+rulesNextPlayer(Players, NPlayers) :-
+  nth1(1, Players, P),
+  append([P], L, Players),
+  append(L, [P], NPlayers).
+
+rulesPreviousPlayer(Players, NPlayers) :-
+  last(Players, P),
+  append(L, [P], Players),
+  append([P], L, NPlayers).
 
 rulesCalza(rulesBet(N, V), Players) :-
     rulesNbrDice(Players, V, N1),
@@ -72,11 +89,12 @@ rulesDudo(rulesBet(N, V), Players) :-
 
 rulesDudo(Bet, Players, NewPlayers) :-
     rulesDudo(Bet, Players),
-    rulesLastLose(Players, NewPlayers).
+    rulesFirstLose(Players, NewPlayers).
 
 rulesDudo(Bet, Players, NewPlayers) :-
     \+ rulesDudo(Bet, Players),
-    rulesFirstLose(Players, NewPlayers).
+    rulesLastLose(Players, NPlayers),
+    rulesPreviousPlayer(NPlayers, NewPlayers).
 
 rulesFirstLose(Players, NewPlayers) :-
     append([P], L, Players),
