@@ -5,6 +5,17 @@ use_module(library(apply)).
 :- [rules].
 :- [ia].
 
+% Idée d'IA : (TODO)
+% Point de confiance pour chaque joueur.
+% A la fin d'un tour, on dévoile les dés de chaque joueur.
+% Les IA qui apprennent peuvent alors voir qui sont ceux qui ont bluffé.
+% On peut ainsi déterminer au cours de la partie un coefficiant de confiance.
+%
+% Apprentissage des derniers coups joués.
+% Quand une IA joue, les autres doivent etre mis au courant.
+% Les IA qui apprennent vont donc pouvoir se faire plaisir.
+% A coupler avec le coefficient de confiance.
+
 % Toujours vrai, affiche les informations sur le jeu Game.
 gameShow(Game) :-
   write('Game : '),
