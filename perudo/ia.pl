@@ -4,12 +4,17 @@
 %   - l'état "joueur" de l'IA (liste de dés)
 %   - la mise précédente
 %   - le nombre total de dés
-%
-% Et optionnellement (ie: ça pourrait être utile) :
 %   - la liste des coups possibles
 %
 % Signature d'une IA :
 %   ia<NomIA>(Dés, NbrTotalDeDés, mise(Nbr, Val), CoupsPossibles, CoupChoisi)
+%
+% Description des paramètres :
+%   1) Liste des dés de l'IA
+%   2) Nombre TOTAL de dés (joueur IA compris)
+%   3) Mise précédente
+%   4) Liste des coups possibles
+%   5) Coup choisi par l'IA
 
 % naive sort
 %isSorted([], _).
@@ -45,17 +50,27 @@ desTries(Des, DesTries) :-
 meilleurCoups(DesTries, [MeilleurCoup]) :-
   last(DesTries, MeilleurCoup).
 
-% IA "autiste", choisissant au hasard parmis la liste des coups possibles :
-%   1) Liste des dés de l'IA
-%   2) Nombre TOTAL de dés (joueur IA compris)
-%   3) Mise précédente
-%   4) Liste des coups possibles
-%   5) Coup choisi par l'IA
+% IA "autiste", choisissant au hasard parmis la liste des coups possibles.
 iaAutiste(_, _, _, CoupsPossibles, Coup) :-
   length(CoupsPossibles, NbCoupsPossibles),
   random(1, NbCoupsPossibles, N),
   nth1(N, CoupsPossibles, Coup).
 
+% IA "statistique" (stats), se basant sur un calcul de probabilités pour
+% décider du coup à jouer. À partir d'une mise(Nbr, Val),
+% l'ia va regarder deux nombres :
+%   1) Le nombre de dés dans sa main correspondant à "Val", c'est à dire le
+%      nombre de dés "Val" et le nombre de pacos, seulement si Val != paco.
+%      On appelle ce nombre "NbMesDesCorrespondant".
+%   2) Le nombre de dés qu'on les autres joueurs ; puis statistiquement,
+%      le nombre de dés correspondant à "Val" dans ces dés.
+%      On divise ce nombre par un coefficient "Stat".
+%      Si Val == paco, Stat == 6, sinon Stat == 3.
+%      On appelle ce nombre divisé "NbAutresDesCorrespondant".
+% L'ia décide du coup à jouer à partir de la somme de ces deux nombres :
+%   - Nbr < Somme => monter
+%   - Nbr > Somme => dudo
+%   - Nbr = Somme => calza
 iaStats(Des, N, mise(Nbr, Val), CoupsPossibles, Coup) :-
   length(Des, NombreMesDes),
   NombreAutresDes is N - NombreMesDes,
