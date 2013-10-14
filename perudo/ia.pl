@@ -1,4 +1,4 @@
-:- module(ia, [iaJoue/5, iaAutiste/5, iaStats/5]).
+:- module(ia, [iaJoue/5, iaAutiste/5, iaStats/5, iaDebile/5]).
 
 % Informations nécessaires pour le fonctionnement d'une IA :
 %   - l'état "joueur" de l'IA (liste de dés)
@@ -7,7 +7,7 @@
 %   - la liste des coups possibles
 %
 % Signature d'une IA :
-%   ia<NomIA>(Dés, NbrTotalDeDés, mise(Nbr, Val), CoupsPossibles, CoupChoisi)
+%   ia<NomIA>(Dés, NbrTotalDeDés, rulesBet(Nbr, Val), CoupsPossibles, CoupChoisi)
 %
 % Description des paramètres :
 %   1) Liste des dés de l'IA
@@ -57,7 +57,7 @@ iaAutiste(_, _, _, CoupsPossibles, Coup) :-
   nth1(N, CoupsPossibles, Coup).
 
 % IA "statistique" (stats), se basant sur un calcul de probabilités pour
-% décider du coup à jouer. À partir d'une mise(Nbr, Val),
+% décider du coup à jouer. À partir d'une rulesBet(Nbr, Val),
 % l'ia va regarder deux nombres :
 %   1) Le nombre de dés dans sa main correspondant à "Val", c'est à dire le
 %      nombre de dés "Val" et le nombre de pacos, seulement si Val != paco.
@@ -71,7 +71,7 @@ iaAutiste(_, _, _, CoupsPossibles, Coup) :-
 %   - Nbr < Somme => monter
 %   - Nbr > Somme => dudo
 %   - Nbr = Somme => calza
-iaStats(Des, N, mise(Nbr, Val), CoupsPossibles, Coup) :-
+iaStats(Des, N, rulesBet(Nbr, Val), CoupsPossibles, Coup) :-
   length(Des, NombreMesDes),
   NombreAutresDes is N - NombreMesDes,
   desTries(Des, DesTries),
@@ -79,8 +79,10 @@ iaStats(Des, N, mise(Nbr, Val), CoupsPossibles, Coup) :-
   meilleurCoups(DesTries, MeilleurCoups),
   write('MeilleurCoups = '), write(MeilleurCoups), write('\n').
 
-%iaJoue(L, X) :-
-iaJoue(Des, N, mise(Nbr, Val), CoupsPossibles, Coup) :-
+iaDebile(_, _, _, [_,_,X|_], X).
+iaDebile(_, _, _, [_,X], X).
+
+iaJoue(Des, N, rulesBet(Nbr, Val), CoupsPossibles, Coup) :-
   write('Des = '), write(Des), write('\n'),
   write('Nombre de dés au total = '), write(N), write('\n'),
   write('Mise :'), write(Nbr), write(' '), write(Val), write('\n'),

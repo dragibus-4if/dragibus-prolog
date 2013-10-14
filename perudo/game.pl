@@ -16,6 +16,13 @@ use_module(library(apply)).
 % Les IA qui apprennent vont donc pouvoir se faire plaisir.
 % A coupler avec le coefficient de confiance.
 
+go :-
+  gameCreate([('John', iaAutiste),
+    ('Marc', iaAutiste), 
+    ('Luke', iaDebile), 
+    ('Lisa', iaAutiste), 
+    ('Jule', iaAutiste)]).
+
 % Toujours vrai, affiche les informations sur le jeu Game.
 gameShow(Game) :-
   write('Game : '),
@@ -27,7 +34,6 @@ gameShow(Game) :-
 % Faux si la liste est vide
 gameCreate([]) :- !, fail.
 gameCreate(Names) :-
-  % Names \= [],
   is_set(Names),
   maplist(playerCreate, Names, Game),
   write('Creation de la partie\n'),
@@ -44,16 +50,17 @@ gameNewTurn([P]) :-
   playerId(P, X),
   write(X),
   write(' dit : Game over motherfucker\n'),
+  write(X),
+  write('\n'),
   !.
 
 gameNewTurn(Game) :-
   write('Nouveau tour de jeu\n'),
   gameShow(Game),
-  gameNbrDice(NGame, NbrDice),
+  gameNbrDice(Game, NbrDice),
   rulesPossibleMoves(Moves, NbrDice),
-  nth1(1, NGame, P),
-  playerDices(P, PDices),
-  iaAutiste(PDices, NbrDice, _, Moves, B),
+  nth1(1, Game, P),
+  playerPlay(P, NbrDice, rulesBet(_, _), Moves, B),
   rulesMove(B),
   gameTurn(Game, _, B).
 
@@ -70,7 +77,7 @@ gameTurn(Game, Bet, calza) :-
   !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, OldBet, Bet) :-
+gameTurn(Game, _, Bet) :-
   rulesNextPlayer(Game, NGame),
   write('Au prochain de jouer avec la mise : '),
   write(Bet),
@@ -79,8 +86,7 @@ gameTurn(Game, OldBet, Bet) :-
   gameNbrDice(NGame, NbrDice),
   rulesPossibleMoves(Bet, NbrDice, Moves),
   nth1(1, NGame, P),
-  playerDices(P, PDices),
-  iaAutiste(PDices, NbrDice, OldBet, Moves, B),
+  playerPlay(P, NbrDice, Bet, Moves, B),
   rulesMove(B),
   gameTurn(NGame, Bet, B).
 
