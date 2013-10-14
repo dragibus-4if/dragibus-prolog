@@ -1,4 +1,10 @@
-iajoue(L, X) :- write(L), write('\n'), read(X).
+iaJoue(L, X) :-
+  write('Liste des coups possibles : '),
+  write(L),
+  write('\n'),
+  write('Que voulez vous jouer : '),
+  read(N),
+  nth1(N, L, X).
 
 % compter le nombre d'occurences d'un élément dans une liste
 compter([], _, 0).

@@ -46,7 +46,7 @@ rulesPossibleMove(rulesBet(N, V1), rulesBet(N, V2)) :-
 rulesPossibleMove(rulesBet(N1, V), rulesBet(N2, V)) :-
     N is N1 + 1,
     between(N, 30, N2),
-    rulesBet(N, N2).
+    rulesBet(N2, V).
 
 rulesPossibleMoves(Bet, Moves) :-
     setof(X, rulesPossibleMove(Bet, X), Moves).

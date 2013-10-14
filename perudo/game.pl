@@ -2,6 +2,8 @@ use_module(library(lists)).
 use_module(library(apply)).
 
 :- [player].
+:- [rules].
+:- [ia].
 
 % Toujours vrai, affiche les informations sur le jeu Game.
 gameShow(Game) :-
@@ -27,20 +29,34 @@ gameNewTurn(Game) :-
   maplist(playerShuffle, L, NGame),
   write('Nouveau tour de jeu\n'),
   gameShow(NGame),
-  % Fait jouer le joueur une premiere fois
-  gameNextPlayer(NGame, NNGame),
-  gameTurn(NNGame, 0).
+  rulesPossibleMoves(Moves),
+  iaJoue(Moves, B),
+  rulesMove(B),
+  gameTurn(NGame, B).
+
+gameTurn(Game, dudo) :-
+  write('Tu bluff gros porc\n'),
+  % TODO: A Traiter
+  gameNewTurn(Game),
+  !.
+
+gameTurn(Game, calza) :-
+  write('J\'ai des boules moi\n'),
+  % TODO: A Traiter
+  gameNewTurn(Game),
+  !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, Mise) :-
+gameTurn(Game, Bet) :-
+  gameNextPlayer(Game, NGame),
   write('Au prochain de jouer avec la mise : '),
-  write(Mise),
+  write(Bet),
   write('\n'),
   gameShow(Game),
-  % Fait jouer le joueur un coup
-  % Traite le coup à jouer
-  gameNextPlayer(Game, NGame),
-  gameTurn(NGame, 0).
+  rulesPossibleMoves(Bet, Moves),
+  iaJoue(Moves, B),
+  rulesMove(B),
+  gameTurn(NGame, B).
 
 % Vrai si les deux listes sont les memes à l'exception que la tete de Game
 % est le dernier élément de NGame.
