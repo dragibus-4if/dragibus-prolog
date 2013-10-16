@@ -1,7 +1,9 @@
-% IA "ivre", choisissant au hasard parmis la liste des coups possibles.
-iaIvre(_, _, _, CoupsPossibles, Coup) :-
-  length(CoupsPossibles, NbCoupsPossibles),
-  random(1, NbCoupsPossibles, N),
-  nth1(N, CoupsPossibles, Coup).
+% IA "ivre", retournant un coefficiant au hasard pour chaque coup possible
+iaIvre(_, _, _, [], []).
+iaIvre(_, _, _, [T1|Q1], [T2|Q2]) :-
+    random(0, 100, X), Stat is X / 100,
+    T2 =[T1, Stat],
+    iaIvre(_, _, _, Q1, Q2),
+    !.
 
 % vim: ft=prolog et sw=2 sts=2
