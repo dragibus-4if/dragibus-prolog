@@ -1,5 +1,3 @@
-:- module(ivre, [iaIvre/5]).
-
 % IA "ivre", choisissant au hasard parmis la liste des coups possibles.
 iaIvre(_, _, _, CoupsPossibles, Coup) :-
   length(CoupsPossibles, NbCoupsPossibles),

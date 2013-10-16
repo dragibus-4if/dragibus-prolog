@@ -1,4 +1,4 @@
-:- module(stats, [iaStats/5])
+:- [utils].
 
 % récupère le premier indice d'apparition d'un élément dans une liste
 indiceElement([Element|_], Element, 0).
@@ -13,7 +13,7 @@ iaStats(Des, N, rulesBet(Nb, De), TousCoupsPossibles, Coup) :-
   length(Des, NbMesDes), NbAutresDes is N - NbMesDes,
 
   % comptage du nombre de dés dans la main correspondant à Val
-  compter(Des, De, NbMesDesCorrespondant),
+  utils:compter(Des, De, NbMesDesCorrespondant),
 
   % estimation du nombre d'autre dés correspondant à Val
   (De = 1 -> Stat is 6 ; Stat is 3),

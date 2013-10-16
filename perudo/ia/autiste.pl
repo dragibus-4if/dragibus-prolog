@@ -1,5 +1,3 @@
-:- module(autiste, [iaAutiste/5]).
-
 :- [utils].
 
 % permet d'unzipper une liste de paires en liste de second

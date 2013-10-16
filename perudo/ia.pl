@@ -1,5 +1,3 @@
-:- module(ia, [iaJoue/5, iaIvre/5, iaDebile/5, iaStats/5, iaAutiste/5]).
-
 % Informations nécessaires pour le fonctionnement d'une IA :
 %   - l'état "joueur" de l'IA (liste de dés)
 %   - la mise précédente
