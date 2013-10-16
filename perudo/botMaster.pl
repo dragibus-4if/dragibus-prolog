@@ -9,14 +9,16 @@ dConfiance(Param, D, Res) :-
 :- dynamic confiance/3.
 
 majConfiance(Player, OtherPlayer, Bet, NbPlayer, Param) :-
-  ((\+ confiance(Player, OtherPlayer, _)) -> assert(confiance(Player, OtherPlayer, 0.5)) ; true),
+  playerId(Player, IdP),
+  playerId(OtherPlayer, IdOP),
+  ((\+ confiance(IdP, IdOP, _)) -> assert(confiance(IdP, IdOP, 0.5)) ; true),
   confiance(Player, OtherPlayer, C),
   dist(Bet, OtherPlayer, NbPlayer, D),
   Res_ is C - Param * D / 10.0,
   ((Res_ < 0) -> Res__ = 0 ; Res__ = Res_),
   ((Res__ > 1) -> Res = 1 ; Res = Res__),
-  retractall(confiance(Player, OtherPlayer, _)),
-  assert(confiance(Player, OtherPlayer, Res)).
+  retractall(confiance(IdP, IdOP, _)),
+  assert(confiance(IdP, IdOP, Res)).
 
 majConfiance(Player, NbPlayer, Param, (OtherPlayer, Bet)) :-
   % Player \= OtherPlayer,
@@ -33,7 +35,9 @@ majConfiances(PlayersNBets, Param) :-
   maplist(majConfiances(PlayersNBets, NbrPlayer, Param), SetPlayers).
 
 nbrDeAttenduPar(Player, V, OtherPlayer, rulesBet(N, V), Res) :-
-  confiance(Player, OtherPlayer, C),
+  playerId(Player, IdP),
+  playerId(OtherPlayer, IdOP),
+  confiance(IdP, IdOP, C),
   Res is C * N.
 
 % nbrDeAttendu(Player, V, PlayersNBets, Res) :-
