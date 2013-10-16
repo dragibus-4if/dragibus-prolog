@@ -1,4 +1,4 @@
-:- module(ia, [iaJoue/5, iaAutiste/5, iaStats/5, iaDebile/5]).
+:- module(ia, [iaJoue/5, iaIvre/5, iaDebile/5, iaStats/5, iaAutiste/5]).
 
 use_module(library(lists)).
 
@@ -28,7 +28,7 @@ iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
 %   - la liste des coups possibles
 %
 % Signature d'une IA :
-%   ia<NomIA>(Dés, NbrTotalDeDés, rulesBet(Nbr, Val), CoupsPossibles, CoupChoisi)
+%   ia<NomIA>(Dés, NbrTotalDeDés, rulesBet(Nb, Val), CoupsPossibles, CoupChoisi)
 %
 % Description des paramètres :
 %   1) Liste des dés de l'IA
@@ -60,42 +60,70 @@ desTries(Des, DesTries) :-
 meilleurCoups(DesTries, [MeilleurCoup]) :-
   last(DesTries, MeilleurCoup).
 
-% IA "autiste", choisissant au hasard parmis la liste des coups possibles.
-iaAutiste(_, _, _, CoupsPossibles, Coup) :-
+% IA "ivre", choisissant au hasard parmis la liste des coups possibles.
+iaIvre(_, _, _, CoupsPossibles, Coup) :-
   length(CoupsPossibles, NbCoupsPossibles),
   random(1, NbCoupsPossibles, N),
   nth1(N, CoupsPossibles, Coup).
 
-second([X, Y], Y).
+% Utile pour les paires [X, Y]
+first([X, _], X).
+second([_, Y], Y).
+
+% récupère le premier indice d'apparition d'un élément dans une liste
+indiceElement([Element|_], Element, 0).
+indiceElement([_|Q], Element, Indice) :-
+  indiceElement(Q, Element, Indice1),
+  Indice is Indice1 + 1.
+
+% permet d'unzipper une liste de paires en liste de second
 unzip2Second([], []).
 unzip2Second([T|Q], [R|L]) :-
   second(T, R),
   unzip2Second(Q, L).
 
 % Intersection entre nos dés et les dés possibles à jouer
-%   - CoupsPossibles est sous la forme [[Nbr, Dé], ...]
+%   - CoupsPossibles est sous la forme [[Nb, Dé], ...]
 choixDesPossibles(Des, CoupsPossibles, MesDesPossibles) :-
   unzip2Second(CoupsPossibles, DesPossibles),
   intersection(Des, DesPossibles, MesDesPossibles).
 
 % IA "statistique" (stats), se basant sur un calcul de probabilités pour
-% décider du coup à jouer. À partir d'une rulesBet(Nbr, Val),
-% l'ia va regarder deux nombres :
-%   1) Le nombre de dés dans sa main correspondant à "Val", c'est à dire le
-%      nombre de dés "Val" et le nombre de pacos, seulement si Val != paco.
-%      On appelle ce nombre "NbMesDesCorrespondant".
-%   2) Le nombre de dés qu'on les autres joueurs ; puis statistiquement,
-%      le nombre de dés correspondant à "Val" dans ces dés.
-%      On divise ce nombre par un coefficient "Stat".
-%      Si Val == paco, Stat == 6, sinon Stat == 3.
-%      On appelle ce nombre divisé "NbAutresDesCorrespondant".
-% L'ia décide du coup à jouer à partir de la somme de ces deux nombres :
-%   - Nbr < Somme => monter
-%   - Nbr > Somme => dudo
-%   - Nbr = Somme => calza
-iaStats(Des, N, rulesBet(Nbr, De), [_, _|CoupsPossibles], Coup) :-
-  length(Des, NombreMesDes),
-  NombreAutresDes is N - NombreMesDes,
+% décider du coup à jouer.
+iaStats(Des, N, rulesBet(Nb, De), TousCoupsPossibles, Coup) :-
+  % nombre de dés à moi
+  length(Des, NbMesDes), NbAutresDes is N - NbMesDes,
+
+  % comptage du nombre de dés dans la main correspondant à Val
+  compter(Des, De, NbMesDesCorrespondant),
+
+  % estimation du nombre d'autre dés correspondant à Val
+  (De = 1 -> Stat is 6 ; Stat is 3),
+  NbAutresDesCorrespondant is NbAutresDes / Stat,
+
+  % choix en fonction de la proba
+  Somme is NbMesDesCorrespondant + NbAutresDesCorrespondant,
+  (Nb < Somme
+    -> NbDesChoisis is Nb + 1, CoupChoisi = [NbDesChoisis, De]
+    ; (Nb > Somme
+        -> CoupChoisi = dudo
+        ; CoupChoisi = calza
+      )
+  ),
+
+  % TODO vérifier si le coup choisi est dans la liste des coups possibles
+
+  % renvoi de l'indice du coup
+  indiceElement(TousCoupsPossibles, CoupChoisi, Coup).
+
+% IA "autiste", juge quel est le meilleur coup à jouer en se basant sur seulement
+% sur ses propre dés.
+iaAutiste(Des, N, rulesBet(Nb, De), TousCoupsPossibles, Coup) :-
+  % nombre de dés à moi
+  length(Des, NbMesDes), NbAutresDes is N - NbMesDes,
+
+  % récupération des coups numériques sans dudo/calza
+  TousCoupsPossibles = [_, _|CoupsPossibles],
 
   % choix des dés possibles à jouer parmi nos dés
   choixDesPossibles(Des, CoupsPossibles, DesPossibles),
@@ -105,23 +133,22 @@ iaStats(Des, N, rulesBet(Nbr, De), [_, _|CoupsPossibles], Coup) :-
 
   % choix des meilleurs coups équiprobables
   meilleurCoups(DesTries, MeilleurCoups),
+  intersection(MeilleurCoups, CoupsPossibles, MeilleurCoupsPossibles),
 
-  % tuple (dés, nb) à choisir
-  length(MeilleurCoups, NbMeilleurCoups),
-  random(1, NbMeilleurCoups, ChoixMeilleurCoup),
-  nth1(ChoixMeilleurCoup, MeilleurCoups, DeValeurChoisi)
-
-  % TODO
-  .
+  % tuple (dés, nb) à choisir, correspondant au coup le
+  % plus avantageux pour l'IA
+  length(MeilleurCoupsPossibles, NbMeilleurCoupsPossibles),
+  random(1, NbMeilleurCoupsPossibles, ChoixMeilleurCoup),
+  nth1(ChoixMeilleurCoup, MeilleurCoupsPossibles, CoupChoisi).
 
 % Ceci est un commentaire
 iaDebile(_, _, _, [_,_,X|_], X).
 iaDebile(_, _, _, [_,X], X).
 
-iaJoue(Des, N, rulesBet(Nbr, Val), CoupsPossibles, Coup) :-
+iaJoue(Des, N, rulesBet(Nb, Val), CoupsPossibles, Coup) :-
   write('Des = '), write(Des), write('\n'),
   write('Nombre de dés au total = '), write(N), write('\n'),
-  write('Mise :'), write(Nbr), write(' '), write(Val), write('\n'),
+  write('Mise :'), write(Nb), write(' '), write(Val), write('\n'),
   write('Liste des coups possibles : '), write(CoupsPossibles), write('\n'),
   write('Que voulez vous jouer ? '), read(Indice), nth1(Indice, CoupsPossibles, Coup).
 
