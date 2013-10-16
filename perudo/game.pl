@@ -4,6 +4,7 @@ use_module(library(apply)).
 :- [player].
 :- [rules].
 :- [ia].
+:- [botMaster].
 
 % Idée d'IA : (TODO)
 % Point de confiance pour chaque joueur.
@@ -18,9 +19,9 @@ use_module(library(apply)).
 
 go :-
   gameCreate([('John', iaAutiste),
-    ('Marc', iaAutiste), 
-    ('Luke', iaDebile), 
-    ('Lisa', iaAutiste), 
+    ('Marc', iaAutiste),
+    ('Luke', iaDebile),
+    ('Lisa', iaAutiste),
     ('Jule', iaAutiste)]).
 
 % Toujours vrai, affiche les informations sur le jeu Game.
@@ -60,24 +61,24 @@ gameNewTurn(Game) :-
   gameNbrDice(Game, NbrDice),
   rulesPossibleMoves(Moves, NbrDice),
   nth1(1, Game, P),
-  playerPlay(P, NbrDice, rulesBet(_, _), Moves, B),
+  playerPlay(P, NbrDice, [], Moves, B),
   rulesMove(B),
-  gameTurn(Game, _, B).
+  gameTurn(Game, [B]).
 
-gameTurn(Game, Bet, dudo) :-
+gameTurn(Game, [dudo, Bet|_]) :-
   write('Tu bluff gros porc\n'),
   rulesDudo(Bet, Game, NGame),
   gameInitNewTurn(NGame),
   !.
 
-gameTurn(Game, Bet, calza) :-
+gameTurn(Game, [calza, Bet|_]) :-
   write('J\'ai des boules moi\n'),
   rulesCalza(Bet, Game, NGame),
   gameInitNewTurn(NGame),
   !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, _, Bet) :-
+gameTurn(Game, [Bet|Bets]) :-
   rulesNextPlayer(Game, NGame),
   write('Au prochain de jouer avec la mise : '),
   write(Bet),
@@ -86,9 +87,9 @@ gameTurn(Game, _, Bet) :-
   gameNbrDice(NGame, NbrDice),
   rulesPossibleMoves(Bet, NbrDice, Moves),
   nth1(1, NGame, P),
-  playerPlay(P, NbrDice, Bet, Moves, B),
+  playerPlay(P, NbrDice, [Bet|Bets], Moves, B),
   rulesMove(B),
-  gameTurn(NGame, Bet, B).
+  gameTurn(NGame, [B,Bet|Bets]).
 
 % Vrai s'il ne reste qu'un seul joueur dans le jeu.
 gameIsOver(Game) :-

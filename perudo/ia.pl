@@ -46,6 +46,7 @@ iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
 compter([], _, 0).
 compter([X|T], X, Y):- compter(T, X, Z), Y is 1 + Z.
 compter([X1|T], X, Z):- X1 \= X, compter(T, X, Z).
+
 % compter le nombre d'occurences pour tous
 compteTous(Liste, X, C) :-
     sort(Liste, L), member(X, L),
