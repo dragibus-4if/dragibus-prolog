@@ -28,22 +28,13 @@ repartitionBinomiale(N, Q, P, Stat) :-
   coefBinomial(N, Q, C),
   Stat is C * (P)**Q * (1-P)**(N-Q), !.
 
-% Calcul à partir de la forme binomiale
-%     N : nombre autres dés
-%     N : nombre de dés manquants
+% Calcul de la probabilité d'un coup, en considérant ses dés
 statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
   % calculer le nombre de dés "manquants"
   compter(Des, De, NbMesDesCorrespondant),
   NbDesManquants is max(0, Nb - NbMesDesCorrespondant),
   length(Des, NbMesDes),
   NbAutresDes is NbTotal - NbMesDes,
-
-  % debug
-  %write('Il y a '), write(NbTotal), write(' dés au total\n'),
-  %write('J\'ai '), write(NbMesDes), write(' dés\n'),
-  %write('Il y a '), write(NbAutresDes), write(' autre dés\n'),
-  %write('J\'ai '), write(NbMesDesCorrespondant), write(' '), write(De), write('\n'),
-  %write('Il manque '), write(NbDesManquants), write(' '), write(De), write('\n'),
 
   % il peut manquer des dés ou non
   (NbDesManquants == 0
@@ -57,14 +48,12 @@ statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
     N = NbAutresDes,
     Q = NbDesManquants,
     P is 1/Div,
-    between(Q, N, X), % FIXME doit sortir plusieurs résultats
-    bagof(S, repartitionBinomiale(N, X, P, S), ListStats),
+    findall(S, (between(Q, N, X), repartitionBinomiale(N, X, P, S)), ListStats),
     write('ListStats = '), write(ListStats), write('\n'),
     sumlist(ListStats, Stat)
   ), !.
-
-%statCoup(Des, N, rulesBet(Nb, De), calza, Stat)
-%statCoup(Des, N, rulesBet(Nb, De), dudo, Stat)
-%statCoup(Des, N, rulesBet(Nb, De), rulesBet(Nb1, De1), Stat)
+% TODO même chose pour dudo/calza
+%statCoup(Des, N, calza, Stat)
+%statCoup(Des, N, dudo, Stat)
 
 % vim: ft=prolog et sw=2 sts=2
