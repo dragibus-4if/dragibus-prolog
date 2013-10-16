@@ -48,10 +48,9 @@ compteTous(Liste, X, C) :-
 
 % tri d'une liste de tuples selon le deuxième élément
 compareSecond(Delta,[_, A], [_, B]):-
-A == B;
-compare(Delta, A, B).
+  A == B; compare(Delta, A, B).
+
 % liste de dés -> set de paires [dé, nb]
-% TODO vérifier que doublons gardés
 desTries(Des, DesTries) :-
   bagof([X, C], compteTous(Des, X, C), DesNonTries),
   predsort(compareSecond, DesNonTries, DesTries).
