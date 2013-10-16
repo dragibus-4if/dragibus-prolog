@@ -22,11 +22,16 @@ iaStats(Des, N, rulesBet(Nb, De), TousCoupsPossibles, Coup) :-
   % choix en fonction de la proba
   Somme is NbMesDesCorrespondant + NbAutresDesCorrespondants,
   (Nb < Somme
-    -> NbDesChoisis is Nb + 1, CoupChoisi = [NbDesChoisis, De]
-    ; (Nb > Somme
-        -> CoupChoisi = dudo
-        ; CoupChoisi = calza
-      )
+  ->
+    NbDesChoisis is Nb + 1,
+    CoupChoisi = [NbDesChoisis, De]
+  ;
+    (Nb > Somme
+    ->
+      CoupChoisi = dudo
+    ;
+      CoupChoisi = calza
+    )
   ),
 
   % TODO vérifier si le coup choisi est dans la liste des coups possibles
