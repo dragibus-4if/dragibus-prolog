@@ -21,8 +21,16 @@ desTries(Des, DesTries) :-
   predsort(compareSecond, DesNonTries, DesTries).
 
 % TODO faire ça mieux
-meilleurCoups(DesTries, [MeilleurCoup]) :-
-  last(DesTries, MeilleurCoup).
+without_last([_], []).
+without_last([X|Xs], [X|WithoutLast]) :-
+without_last(Xs, WithoutLast).
+
+%meilleurCoups(DesTries, MeilleurCoup) :-
+%last(DesTries, MeilleurCoup), without_last(DesTries,suivant),last(MeilleurCoup) == last(last(suivant%)),meilleurCoups(suivant ,MeilleurCoup )
+%,write(suivant),write('\n').
+
+meilleurCoups([],_).
+meilleurCoups(DesTries,MeilleurCoup) :- reverse(DesTries,Retournee),nth0(0,Retournee,MeilleurCoup),write(MeilleurCoup),write('\n').
 
 % Intersection entre nos dés et les dés possibles à jouer
 %   - CoupsPossibles est sous la forme [[Nb, Dé], ...]
