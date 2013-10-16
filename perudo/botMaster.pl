@@ -12,7 +12,7 @@ majConfiance(Player, OtherPlayer, Bet, NbPlayer, Param) :-
   playerId(Player, IdP),
   playerId(OtherPlayer, IdOP),
   ((\+ confiance(IdP, IdOP, _)) -> assert(confiance(IdP, IdOP, 0.5)) ; true),
-  confiance(Player, OtherPlayer, C),
+  confiance(IdP, IdOP, C),
   dist(Bet, OtherPlayer, NbPlayer, D),
   Res_ is C - Param * D / 10.0,
   ((Res_ < 0) -> Res__ = 0 ; Res__ = Res_),
@@ -34,13 +34,14 @@ majConfiances(PlayersNBets, Param) :-
   length(SetPlayers, NbrPlayer),
   maplist(majConfiances(PlayersNBets, NbrPlayer, Param), SetPlayers).
 
-nbrDeAttenduPar(Player, V, OtherPlayer, rulesBet(N, V), Res) :-
+nbrDeAttenduPar(Player, V, (OtherPlayer, rulesBet(N, V1)), Res) :-
   playerId(Player, IdP),
   playerId(OtherPlayer, IdOP),
   confiance(IdP, IdOP, C),
-  Res is C * N.
+  ((V = V1) -> Res is C * N ; Res is 0).
 
-% nbrDeAttendu(Player, V, PlayersNBets, Res) :-
-  % maplist(nbrDeAttenduPar), PlayersNBets).
+nbrDeAttendu(Player, V, PlayersNBets, Res) :-
+  maplist(nbrDeAttenduPar(Player, V), PlayersNBets, L),
+  max_list(L, Res).
 
 % vim: ft=prolog et sw=2 sts=2
