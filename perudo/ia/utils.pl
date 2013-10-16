@@ -1,3 +1,5 @@
+:- use_module(library(lists)).
+
 % Utile pour les paires [X, Y]
 premier([X, _], X).
 second([_, Y], Y).
@@ -21,6 +23,11 @@ coefBinomial(N, P, B) :-
   coefBinomial(N1, P, B2),
   B is B1 + B2.
 
+% Répartition binomiale
+repartitionBinomiale(N, Q, P, Stat) :-
+  coefBinomial(N, Q, C),
+  Stat is C * (P)**Q * (1-P)**(N-Q), !.
+
 % Calcul à partir de la forme binomiale
 %     N : nombre autres dés
 %     N : nombre de dés manquants
@@ -28,32 +35,32 @@ statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
   % calculer le nombre de dés "manquants"
   compter(Des, De, NbMesDesCorrespondant),
   NbDesManquants is max(0, Nb - NbMesDesCorrespondant),
-  (NbDesManquants =< 0
+  length(Des, NbMesDes),
+  NbAutresDes is NbTotal - NbMesDes,
+
+  % debug
+  %write('Il y a '), write(NbTotal), write(' dés au total\n'),
+  %write('J\'ai '), write(NbMesDes), write(' dés\n'),
+  %write('Il y a '), write(NbAutresDes), write(' autre dés\n'),
+  %write('J\'ai '), write(NbMesDesCorrespondant), write(' '), write(De), write('\n'),
+  %write('Il manque '), write(NbDesManquants), write(' '), write(De), write('\n'),
+
+  % il peut manquer des dés ou non
+  (NbDesManquants == 0
   ->
     Stat = 1
   ;
-    length(Des, NbMesDes), NbAutresDes is NbTotal - NbMesDes,
-
-    % Debug
-    %write('Il y a '), write(NbTotal), write(' dés au total\n'),
-    %write('J\'ai '), write(NbMesDes), write(' dés\n'),
-    %write('Il y a '), write(NbAutresDes), write(' autre dés\n'),
-    %write('Il manque '), write(NbDesManquants), write(' '), write(De), write('\n'),
-    %write('J\'ai '), write(NbMesDesCorrespondant), write(' '), write(De), write('\n'),
-
     % coefficient de division (6 si paco, 3 sinon)
-    (De = 1 -> Div is 6 ; Div is 3),
+    (De == 1 -> Div = 6 ; Div = 3),
 
-    %% stat en fonction de la distance entre les deux nombres (minimisée à 0)
-    %NbAutresDesCorrespondants is NbAutresDes / Div,
-    %Distance is max(0, NbDesManquants - NbAutresDesCorrespondants),
-    %Stat is exp(-Distance).
-
-    % calcul du coefficient binomial
+    % calcul de la stat à partir des stats individuelles
     N = NbAutresDes,
     Q = NbDesManquants,
-    coefBinomial(N, Q, C),
-    Stat is C * (1/Div)**Q * (1-1/Div)**(N-Q)
+    P is 1/Div,
+    between(Q, N, X), % FIXME doit sortir plusieurs résultats
+    bagof(S, repartitionBinomiale(N, X, P, S), ListStats),
+    write('ListStats = '), write(ListStats), write('\n'),
+    sumlist(ListStats, Stat)
   ), !.
 
 %statCoup(Des, N, rulesBet(Nb, De), calza, Stat)
