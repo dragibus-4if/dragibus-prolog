@@ -49,7 +49,6 @@ statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
     Q = NbDesManquants,
     P is 1/Div,
     findall(S, (between(Q, N, X), repartitionBinomiale(N, X, P, S)), ListStats),
-    write('ListStats = '), write(ListStats), write('\n'),
     sumlist(ListStats, Stat)
   ), !.
 % TODO même chose pour dudo/calza
