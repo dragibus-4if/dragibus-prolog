@@ -1,5 +1,5 @@
-use_module(library(random)).
-use_module(library(lists)).
+:- use_module(library(random)).
+:- use_module(library(lists)).
 
 % Vrai si Res et un player(Id, L) avec L une liste de taille 5 de nombres
 % aléatoires entre 1 et 6 compris.

@@ -51,8 +51,23 @@ statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
     findall(S, (between(Q, N, X), repartitionBinomiale(N, X, P, S)), ListStats),
     sumlist(ListStats, Stat)
   ), !.
-% TODO même chose pour dudo/calza
-%statCoup(Des, N, calza, Stat)
-%statCoup(Des, N, dudo, Stat)
+
+% Calcul de la probabilité sur une enchêre: changement de dé
+statEnchere(Des, N, rulesBet(Nb, _), rulesBet(Nb, DeChoisi), Stat) :-
+  statCoup(Des, N, rulesBet(Nb, DeChoisi), Stat).
+
+% Calcul de la probabilité sur une enchêre: augmentation du nombre
+statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, De), Stat) :-
+  statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
+% TODO prendre en compte la mise précédente
+
+% Calcul de la probabilité sur une enchêre: dudo
+statEnchere(Des, N, rulesBet(Nb, De), dudo, Stat) :-
+  statCoup(Des, N, rulesBet(Nb, De), Stat1),
+  Stat is 1 - Stat1.
+
+% Calcul de la probabilité sur une enchêre: calza
+% TODO
+%statEnchere(Des, N, rulesBet(Nb, De), calza, Stat)
 
 % vim: ft=prolog et sw=2 sts=2
