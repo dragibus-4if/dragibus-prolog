@@ -1,5 +1,24 @@
 :- module(ia, [iaJoue/5, iaAutiste/5, iaStats/5, iaDebile/5]).
 
+iaNbrDice(Dices, V, N) :-
+    include(==(V), Dices, L),
+    length(L, N).
+
+% Fonction d'évaluation d'une mise par rapport au dé du joueur, du nombre total
+% de dé, de la mise precedente.
+iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
+    Bet = rulesBet(N, V),
+    Bet,
+    iaNbrDice(Dices, V, N1),
+    iaNbrDice(Dices, 1, N2),
+    ((V == 1) -> (NbrMe is N1, Div is 6) ; (NbrMe is N1 + N2, Div is 3)),
+    length(Dices, N_),
+    NbrOther is NbrDice - N_,
+    write('Nombre eu = '), write(NbrMe), write('\n'),
+    Lim is NbrOther / Div,
+    write('Limite statistique = '), write(Lim), write('\n'),
+    Value is Lim / (N - NbrMe).
+
 % Informations nécessaires pour le fonctionnement d'une IA :
 %   - l'état "joueur" de l'IA (liste de dés)
 %   - la mise précédente
@@ -79,6 +98,7 @@ iaStats(Des, N, rulesBet(Nbr, Val), CoupsPossibles, Coup) :-
   meilleurCoups(DesTries, MeilleurCoups),
   write('MeilleurCoups = '), write(MeilleurCoups), write('\n').
 
+% Ceci est un commentaire
 iaDebile(_, _, _, [_,_,X|_], X).
 iaDebile(_, _, _, [_,X], X).
 
