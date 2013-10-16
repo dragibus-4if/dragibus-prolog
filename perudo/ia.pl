@@ -1,5 +1,7 @@
 :- module(ia, [iaJoue/5, iaAutiste/5, iaStats/5, iaDebile/5]).
 
+use_module(library(lists)).
+
 iaNbrDice(Dices, V, N) :-
     include(==(V), Dices, L),
     length(L, N).
@@ -35,13 +37,6 @@ iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
 %   4) Liste des coups possibles
 %   5) Coup choisi par l'IA
 
-% naive sort
-%isSorted([], _).
-%isSorted([_], _).
-%isSorted([X, Y|T], Pred) :- call(Pred, X, Y), isSorted([Y|T], Pred).
-%naiveSort(List, Sorted):- naiveSort(List, Sorted, =<).
-%naiveSort(List, Sorted, Pred):- perm(List, Sorted), isSorted(Sorted, Pred).
-
 % compter le nombre d'occurences d'un élément dans une liste
 compter([], _, 0).
 compter([X|T], X, Y):- compter(T, X, Z), Y is 1 + Z.
@@ -53,17 +48,13 @@ compteTous(Liste, X, C) :-
 
 % tri d'une liste de tuples selon le deuxième élément
 compareSecond(Delta, [_, A], [_, B]):-
-  %write('U = '), write(U), write('\n'),
-  %write('V = '), write(V), write('\n'),
-  %write('A = '), write(A), write('\n'),
-  %write('B = '), write(B), write('\n'),
   compare(Delta, A, B).
 
-% liste de dés -> set de dés
+% liste de dés -> set de paires [dé, nb]
+% TODO vérifier que doublons gardés
 desTries(Des, DesTries) :-
   bagof([X, C], compteTous(Des, X, C), DesNonTries),
   predsort(compareSecond, DesNonTries, DesTries).
-  %naiveSort(DesNonTries, DesTries, compareSecond).
 
 % TODO faire ça mieux
 meilleurCoups(DesTries, [MeilleurCoup]) :-
@@ -74,6 +65,18 @@ iaAutiste(_, _, _, CoupsPossibles, Coup) :-
   length(CoupsPossibles, NbCoupsPossibles),
   random(1, NbCoupsPossibles, N),
   nth1(N, CoupsPossibles, Coup).
+
+second([X, Y], Y).
+unzip2Second([], []).
+unzip2Second([T|Q], [R|L]) :-
+  second(T, R),
+  unzip2Second(Q, L).
+
+% Intersection entre nos dés et les dés possibles à jouer
+%   - CoupsPossibles est sous la forme [[Nbr, Dé], ...]
+choixDesPossibles(Des, CoupsPossibles, MesDesPossibles) :-
+  unzip2Second(CoupsPossibles, DesPossibles),
+  intersection(Des, DesPossibles, MesDesPossibles).
 
 % IA "statistique" (stats), se basant sur un calcul de probabilités pour
 % décider du coup à jouer. À partir d'une rulesBet(Nbr, Val),
@@ -90,13 +93,26 @@ iaAutiste(_, _, _, CoupsPossibles, Coup) :-
 %   - Nbr < Somme => monter
 %   - Nbr > Somme => dudo
 %   - Nbr = Somme => calza
-iaStats(Des, N, rulesBet(Nbr, Val), CoupsPossibles, Coup) :-
+iaStats(Des, N, rulesBet(Nbr, De), [_, _|CoupsPossibles], Coup) :-
   length(Des, NombreMesDes),
   NombreAutresDes is N - NombreMesDes,
-  desTries(Des, DesTries),
-  write('DesTries = '), write(DesTries), write('\n'),
+
+  % choix des dés possibles à jouer parmi nos dés
+  choixDesPossibles(Des, CoupsPossibles, DesPossibles),
+
+  % tri des dés possibles sous la forme [[D1, Nb1], [D2, Nb2], ...]
+  desTries(DesPossibles, DesTries),
+
+  % choix des meilleurs coups équiprobables
   meilleurCoups(DesTries, MeilleurCoups),
-  write('MeilleurCoups = '), write(MeilleurCoups), write('\n').
+
+  % tuple (dés, nb) à choisir
+  length(MeilleurCoups, NbMeilleurCoups),
+  random(1, NbMeilleurCoups, ChoixMeilleurCoup),
+  nth1(ChoixMeilleurCoup, MeilleurCoups, DeValeurChoisi)
+
+  % TODO
+  .
 
 % Ceci est un commentaire
 iaDebile(_, _, _, [_,_,X|_], X).
