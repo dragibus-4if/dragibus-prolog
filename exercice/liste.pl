@@ -19,6 +19,15 @@ inv([X|Xs], L) :-
   concat(L2, [X], L).
 
 % substitution
-% TODO
+subsAll(_, _, [], []).
+subsAll(E, X, [T|Q], L) :-
+  T \= E,
+  subsAll(E, X, Q, Ls),
+  concat([T], Ls, L),
+  !.
+subsAll(E, X, [E|Q], L) :-
+  subsAll(E, X, Q, Ls),
+  concat([X], Ls, L),
+  !.
 
 % vim: ft=prolog et sw=2 sts=2
