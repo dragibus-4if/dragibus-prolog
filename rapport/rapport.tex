@@ -1,0 +1,89 @@
+\documentclass{article}
+
+% Paquets
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+
+% Commandes
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Configuration des listings (code source)
+\definecolor{gray}{rgb}{0.7, 0.7, 0.7}
+\lstset{
+    basicstyle=\footnotesize,
+    backgroundcolor=\color{white},
+    commentstyle=\itshape\color{gray},
+    keywordstyle=\bf\color{black},
+    stringstyle=\color{green},
+    breakatwhitespace=false,
+    breaklines=true,
+    language=Prolog,
+    deletekeywords={concat},
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+% Document
+\begin{document}
+
+% Page de garde
+\begin{titlepage}
+\begin{center}
+
+% Titre
+\HRule \\[0.4cm]
+{\huge \bfseries Projet Prolog 4IF}
+\HRule \\[1.5cm]
+
+% Auteurs
+\begin{minipage}{0.8\textwidth}
+\center
+\large
+Hexanôme 4104
+\end{minipage}
+
+\vfill
+
+% Fin de page
+{\large \today}
+
+\end{center}
+\end{titlepage}
+
+\section{Exercices}
+
+\subsection{Généalogie}
+\lstinputlisting{../exercice/genealogie.pl}
+
+\subsection{Listes}
+\lstinputlisting{../exercice/liste.pl}
+
+\subsection{Arithmetique}
+\lstinputlisting{../exercice/arithmetique.pl}
+
+\subsection{Ensembles}
+\lstinputlisting{../exercice/ensemble.pl}
+
+\section{Projet}
+
+Nous nous sommes basés sur le jeu du Perudo (Liar's Dice).
+
+\subsection{Règles du jeu}
+Chaque joueur a un certain nombre de dés à lancer.  Ces dés sont des dés à six
+faces normaux, excepté le 1, qu'on appelle Paco, et qui est une sorte de joker :
+il a toutes les autres valeurs à la fois.
+\\
+Ainsi, par exemple, si on a sur
+cinq dés Paco-deux-trois-cinq-cinq, on comptera 2 deux (le vrai et le Paco), 2
+trois(le vrai et le paco), 1 quatre (le paco), 3 cinq (le paco et les deux
+vrais), ou 1 six(le paco).
+\\
+Les enchères sur les faces des dés sont toujours au moins. Si on parie sur 5
+six, il faut qu'il y ait au moins 5 dés de valeur six pour que l'enchère soit
+correcte.
+
+\end{document}
