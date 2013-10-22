@@ -44,5 +44,3 @@ cousin(X, Y) :-
   parent(A, X),
   parent(B, Y),
   frereSoeur(A, B).
-
-% vim: ft=prolog et sw=2 sts=2
