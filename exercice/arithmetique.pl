@@ -1,5 +1,5 @@
-% element(Idx, X, L) est vrai si X est à la position Idx dans L (en commençant à compter à partir de 1).
-% On doit passer par une fonction element/4 pour intégrer un accumulateur en paramètre.
+% Element(Idx, X, L) est vrai si X est a la position Idx dans L (en commencant a compter a partir de 1).
+% On doit passer par une fonction element/4 pour integrer un accumulateur en parametre.
 element(Idx, X, L) :-
   element(Idx, 0, X, L).
 element(Idx, _, _, _) :-

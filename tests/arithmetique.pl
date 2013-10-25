@@ -6,7 +6,6 @@ testElement :-
     element(1, a, [a, b, a]),
     \+ element(2, a, [a, b, a]),
     element(3, a, [a, b, a]),
-    % Identique à nth1/3. On l'utilise alors pour prouver le code.
+    % Identique a nth1/3. On l'utilise alors pour prouver le code.
     nth1(Idx, L, E),
     element(Idx, E, L).
-

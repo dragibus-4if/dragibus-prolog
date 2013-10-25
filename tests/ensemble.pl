@@ -1,4 +1,4 @@
-% Test de la vérification d'un ensemble
+% Test de la verification d'un ensemble
 testEnsemble :-
     ensemble([]),
     ensemble([a]),
