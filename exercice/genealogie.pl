@@ -1,13 +1,5 @@
-% Création d'une base de connaissances en spécifiant les relations "parent"
-% directes. parent(X, Y) vrai si X est le parent de Y.
-parent(john, martha).
-parent(john, marc).
-parent(rodrigo, john).
-parent(jean, leo).
-parent(louis, jean).
-parent(louis, george).
-parent(rodrigo, louis).
-parent(ivonne, rodrigo).
+% On crééra une base de connaissances en spécifiant les relations "parent"
+% directes. parent(X, Y) étant vrai si X est le parent de Y.
 
 % Définition du lien grand-parent par une propagation de la relation parent sur 2
 % niveaux.
