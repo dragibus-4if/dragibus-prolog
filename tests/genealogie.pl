@@ -1,5 +1,3 @@
-:- [genealogie].
-
 % Base de connaissances
 parent(john, martha).
 parent(john, marc).
@@ -30,3 +28,32 @@ testAncetre :-
     ancetre(rodrigo, marc),
     ancetre(john, martha),
     \+ancetre(martha, martha).
+
+% Test de la relation frère-sœur
+testFrereSoeur :-
+    frereSoeur(martha, marc),
+    frereSoeur(marc, martha),
+    \+frereSoeur(marc, marc),
+    \+frereSoeur(rodrigo, marc),
+    \+frereSoeur(rodrigo, jean).
+
+% Test de la relation oncle-tante
+testOncleTante :-
+    oncleTante(louis, marc),
+    oncleTante(louis, martha),
+    \+oncleTante(rodrigo, martha),
+    \+oncleTante(marc, martha).
+
+% Test de la relation cousin
+testCousin :-
+    cousin(jean, martha),
+    cousin(marc, jean),
+    \+cousin(marc, martha),
+    \+cousin(rodrigo, martha).
+
+% Tester tout le module
+testTout :-
+    testGrandParent,
+    testAncetre,
+    testFrereSoeur,
+    testOncleTante.
