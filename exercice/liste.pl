@@ -1,3 +1,6 @@
+% element(X, L, L\X) est vrai si L/X est une liste composé des éléments de L
+% privé une fois de X.
+% Les trois paramètres peuvent etre des variables.
 element(X, [X|Xs], Xs).
 element(X, [T|As], [T|Bs]) :-
   element(X, As, Bs),
