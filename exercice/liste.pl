@@ -1,5 +1,6 @@
-% element(X, L, L\X) est vrai si L/X est une liste composé des éléments de L
-% privé une fois de X.
+% element(X, L, L\X) est vrai si L/X est une liste composé des
+% éléments de L. L'ordre doit etre préservé.  privé une fois de X.
+% Si X n'est pas dans L, alors le prédicat est faux.
 % Les trois paramètres peuvent etre des variables.
 element(X, [X|Xs], Xs).
 element(X, [T|As], [T|Bs]) :-
