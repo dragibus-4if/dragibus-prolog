@@ -1,9 +1,18 @@
-\documentclass{article}
+\documentclass[a4paper, 11pt]{article}
 
 % Paquets
 \usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
 \usepackage{listings}
-\usepackage{color}
+\usepackage{hyperref}
 
 % Commandes
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
@@ -11,70 +20,187 @@
 % Configuration des listings (code source)
 \definecolor{gray}{rgb}{0.7, 0.7, 0.7}
 \lstset{
-    basicstyle=\footnotesize,
-    backgroundcolor=\color{white},
-    commentstyle=\itshape\color{gray},
-    keywordstyle=\bf\color{black},
-    stringstyle=\color{green},
+    language=Prolog,
+    % basicstyle=\footnotesize,
+    basicstyle=\ttfamily\small, %
+    identifierstyle=\color{red!50!black!100}, %
+    keywordstyle=\color{blue}, %
+    stringstyle=\color{black!60}, %
+    commentstyle=\color{green!65!black!95}, %
+    % backgroundcolor=\color{white},
+    % commentstyle=\itshape\color{gray},
+    % keywordstyle=\bf\color{black},
+    % stringstyle=\color{green},
     breakatwhitespace=false,
     breaklines=true,
-    language=Prolog,
     deletekeywords={concat},
     keepspaces=true,
     showspaces=false,
     showstringspaces=false,
     showtabs=false,
+    extendedchars=true, %
+    columns=flexible, %
+    numbers=left, %
+    numberstyle=\tiny, %
+    captionpos=b,
+    breakautoindent=true, %
     tabsize=2
 }
 
+\definecolor{Zgris}{rgb}{0.87,0.85,0.85}
+
+\newsavebox{\BBbox}
+\newenvironment{DDbox}[1]{
+\begin{lrbox}{\BBbox}\begin{minipage}{\linewidth}}
+{\end{minipage}\end{lrbox}\noindent\colorbox{Zgris}{\usebox{\BBbox}} \\
+[.5cm]}
+
 % Document
 \begin{document}
-
 % Page de garde
 \begin{titlepage}
-\begin{center}
+    \begin{center}
+        % Titre
+        \HRule \\[0.4cm]
+        {\huge \bfseries Projet Prolog 4IF}
+        \HRule \\[1.5cm]
 
-% Titre
-\HRule \\[0.4cm]
-{\huge \bfseries Projet Prolog 4IF}
-\HRule \\[1.5cm]
+        % Auteurs
+        \begin{minipage}{0.8\textwidth}
+            \center
+            \large
+            Hexanôme 4104 - Equipe Dragibus
+        \end{minipage}
 
-% Auteurs
-\begin{minipage}{0.8\textwidth}
-\center
-\large
-Hexanôme 4104
-\end{minipage}
-
-\vfill
-
-% Fin de page
-{\large \today}
-
-\end{center}
+        \vfill
+        % Fin de page
+        {\large \today}
+    \end{center}
 \end{titlepage}
 
+\tableofcontents
+\newpage
+
 \section{Exercices}
-
 \subsection{Généalogie}
+On crééra une base de connaissances en spécifiant les relations "parent"
+directes. parent(X, Y) étant vrai si X est le parent de Y. \\
 
-\lstinputlisting{../exercice/genealogie.pl}
-\lstinputlisting{../tests/genealogie.pl}
+Définition du lien grand-parent par une propagation de la relation parent sur 2
+niveaux. grandParent(X, Y) est vrai si X est le grand parent de Y. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/grandParent.pl}
+\end{DDbox}
+
+Définition du lien ancêtre par une propagation récursive sur plusieurs
+niveaux, jusqu'à satisfaction. ancetre(X, Y) est vrai si X est un ancetre de Y. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/ancetre.pl}
+\end{DDbox}
+
+Définition de la liste des ancêtres à partir d'un élément de la
+famille.  On utilise setof car cette partie n'est pas sur les
+listes, et son utilisation est pratique pour éliminer les
+doublons dans les candidats à la relation ancêtre. On définie de
+la meme façon pour récupérer la liste des descendants. \\
+ancetres(X, L) est vrai si L est l'ensemble des ancetres de X. \\
+descendants(X, L) est vrai si L est l'ensemble des descendants de X. \\
+Dans ces deux prédicats, X ne peut pas être déterminée à partir
+de L, et donc ne peut pas être une variable. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/ancetres.pl}
+\end{DDbox}
+
+Définition de la relation frère-soeur complète en partant du
+constat que celle-ci correspond au partage des parents. Cette
+relation n'est pas réflexive, une personne ne pouvant pas être
+son propre frère-soeur. frereSoeur(X, Y) est vrai si X et Y ont
+le meme parent (donc sont frère-soeur). \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/frereSoeur.pl}
+\end{DDbox}
+
+Définition de la relation oncle-tante par une relation
+frère-soeur pour un parent. oncleTante(X, Y) est vrai si X est
+l'oncle (ou la tante) de Y. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/oncleTante.pl}
+\end{DDbox}
+
+Définition de la relation cousin par une relation frère-sœur
+entre deux parents.  cousin(X, Y) est vrai si X et Y sont cousin
+(càd que leur parent sont freres). \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/genealogie/cousin.pl}
+\end{DDbox}
+
+% \subsubsection{Tests}
+% \begin{DDbox}{\linewidth}
+%     \lstinputlisting{../tests/genealogie.pl}
+% \end{DDbox}
 
 \subsection{Listes}
-\lstinputlisting{../exercice/liste.pl}
-\lstinputlisting{../tests/liste.pl}
+element(X, L, LprivX) est vrai si L/X est une liste composé des
+éléments de L privé une fois de X. L'ordre doit etre préservé.  Si
+X n'est pas dans L, alors le prédicat est faux.  Les trois
+paramètres peuvent etre des variables. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/liste/element.pl}
+\end{DDbox}
+
+extract(L1, L2) est vrai si L2 est un sous ensemble de L1. Les
+deux paramètres peuvent etre des variables. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/liste/extract.pl}
+\end{DDbox}
+
+concat(L1, L2, L1nL2) est vrai si L1nL2 est la concaténation de L1
+et L2. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/liste/concat.pl}
+\end{DDbox}
+
+inv(L1, L2) est vrai si L1 est l'inverse de L2. On remarque que si
+L1 n'est pas une variable et que L2 en est une, le prédicat ne se
+termine pas. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/liste/inv.pl}
+\end{DDbox}
+
+subsAll(E, X, L1, L2) est vrai si L2 est la liste L1 avec les
+éléments E remplacés par des X. Dans le cas ou E est une variable,
+il prend la première valeur de L1. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/liste/subsAll.pl}
+\end{DDbox}
+
+% \subsubsection{Tests}
+% \begin{DDbox}{\linewidth}
+%     \lstinputlisting{../tests/liste.pl}
+% \end{DDbox}
 
 \subsection{Arithmetique}
-\lstinputlisting{../exercice/arithmetique.pl}
-\lstinputlisting{../tests/arithmetique.pl}
+element(Idx, X, L) est vrai si X est à la position Idx dans L (en
+commençant à compter à partir de 1). On doit passer par une
+fonction element/4 pour intégrer un accumulateur en paramètre. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/arithmetique/element.pl}
+\end{DDbox}
+
+% \subsubsection{Tests}
+% \begin{DDbox}{\linewidth}
+%     \lstinputlisting{../tests/arithmetique.pl}
+% \end{DDbox}
 
 \subsection{Ensembles}
-\lstinputlisting{../exercice/ensemble.pl}
-\lstinputlisting{../tests/ensemble.pl}
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/ensemble.pl}
+\end{DDbox}
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../tests/ensemble.pl}
+\end{DDbox}
 
 \section{Projet}
-
 Nous nous sommes basés sur le jeu du Perudo (Liar's Dice).
 
 \subsection{Règles du jeu}

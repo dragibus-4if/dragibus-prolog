@@ -1,5 +1,3 @@
-:- [eliste].
-
 testElement :-
     \+ element(_, [], []),
     element(b, [a, b, c], [a, c]),
