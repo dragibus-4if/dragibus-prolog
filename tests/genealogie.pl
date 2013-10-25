@@ -29,7 +29,7 @@ testAncetre :-
     ancetre(john, martha),
     \+ ancetre(martha, martha).
 
-% Test de la relation frère-sœur
+% Test de la relation frere-soeur
 testFrereSoeur :-
     frereSoeur(martha, marc),
     frereSoeur(marc, martha),

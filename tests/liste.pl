@@ -7,7 +7,7 @@ testElement :-
     \+ element(a, [a, b], [a, b]),
     \+ element(a, [c, b], [c, b]),
     \+ element(b, [a, b, c], [a, b]),
-    % Il faut rajouter une coupure pour prouver les prédicats
+    % Il faut rajouter une coupure pour prouver les predicats
     % suivants pour limiter l'espace des solutions :
     % element(X, [X | L], L),
     % element(X, [A, X | L], [A | L]),
