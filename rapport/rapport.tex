@@ -81,8 +81,7 @@
 \tableofcontents
 \newpage
 
-\section{Exercices}
-\subsection{Généalogie}
+\section{Généalogie}
 On crééra une base de connaissances en spécifiant les relations "parent"
 directes. parent(X, Y) étant vrai si X est le parent de Y. \\
 \begin{DDbox}{\linewidth}
@@ -142,7 +141,8 @@ entre deux parents.  cousin(X, Y) est vrai si X et Y sont cousin
 %     \lstinputlisting{../tests/genealogie.pl}
 % \end{DDbox}
 
-\subsection{Listes}
+\newpage
+\section{Listes}
 element(X, L, LprivX) est vrai si L/X est une liste composé des
 éléments de L privé une fois de X. L'ordre doit etre préservé.  Si
 X n'est pas dans L, alors le prédicat est faux.  Les trois
@@ -182,7 +182,8 @@ il prend la première valeur de L1. \\
 %     \lstinputlisting{../tests/liste.pl}
 % \end{DDbox}
 
-\subsection{Arithmetique}
+\newpage
+\section{Arithmetique}
 element(Idx, X, L) est vrai si X est à la position Idx dans L (en
 commençant à compter à partir de 1). On doit passer par une
 fonction element/4 pour intégrer un accumulateur en paramètre. \\
@@ -195,29 +196,28 @@ fonction element/4 pour intégrer un accumulateur en paramètre. \\
 %     \lstinputlisting{../tests/arithmetique.pl}
 % \end{DDbox}
 
-\subsection{Ensembles}
+\newpage
+\section{Ensembles}
+list2ens(L, E) est vrai quand E correspond a l'ensemble des
+elements de L, sans doublon. L'ordre de la liste initiale est
+conserve.  On doit alors définir un predicat list2ens/3 pour
+utiliser un accumulateur en paramètre. Egalement, on définit
+simplement un prédicat element/2 qui est vrai lorsqu'un élément X
+est dans une liste L. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/ensemble.pl}
-\end{DDbox}
-\begin{DDbox}{\linewidth}
-    \lstinputlisting{../tests/ensemble.pl}
+    \lstinputlisting{../exercice/ensemble/list2ens.pl}
 \end{DDbox}
 
-\section{Projet}
-Nous nous sommes basés sur le jeu du Perudo (Liar's Dice).
+ensemble(L) est vrai quand L est un ensemble, et donc ne contient
+pas de doublons. On réutilise le prédicat précédemment fait
+list2ens. \\
+\begin{DDbox}{\linewidth}
+    \lstinputlisting{../exercice/ensemble/ensemble.pl}
+\end{DDbox}
 
-\subsection{Règles du jeu}
-Chaque joueur a un certain nombre de dés à lancer.  Ces dés sont des dés à six
-faces normaux, excepté le 1, qu'on appelle Paco, et qui est une sorte de joker :
-il a toutes les autres valeurs à la fois.
-\\
-Ainsi, par exemple, si on a sur
-cinq dés Paco-deux-trois-cinq-cinq, on comptera 2 deux (le vrai et le Paco), 2
-trois(le vrai et le paco), 1 quatre (le paco), 3 cinq (le paco et les deux
-vrais), ou 1 six(le paco).
-\\
-Les enchères sur les faces des dés sont toujours au moins. Si on parie sur 5
-six, il faut qu'il y ait au moins 5 dés de valeur six pour que l'enchère soit
-correcte.
+% \subsection{Test}
+% \begin{DDbox}{\linewidth}
+%     \lstinputlisting{../tests/ensemble.pl}
+% \end{DDbox}
 
 \end{document}
