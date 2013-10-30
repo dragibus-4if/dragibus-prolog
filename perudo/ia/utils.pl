@@ -1,9 +1,5 @@
 :- use_module(library(lists)).
 
-% Utile pour les paires [X, Y]
-premier([X, _], X).
-second([_, Y], Y).
-
 % Répéte un prédicat jusqu'à ce qu'il soit vrai
 repeter.
 repeter(P) :- P ; repeter(P).
@@ -78,6 +74,7 @@ statEnchere(Des, NbTotal, rulesBet(Nb, De), calza, Stat) :-
   length(Des, NbMesDes),
   NbAutresDes is NbTotal - NbMesDes,
 
+  (NbDesManquants > NbAutresDes -> Stat = 0 ;
   % Application de la formule:
   %   * nT: nombre de dés totaux (autres dés) -> NbAutresDes
   %   * nD: nombre de dés manquants -> NbDesManquants
@@ -85,6 +82,6 @@ statEnchere(Des, NbTotal, rulesBet(Nb, De), calza, Stat) :-
   NT = NbAutresDes,
   ND = NbDesManquants,
   coefBinomial(NT, ND, Coef),
-  Stat is Coef / 6**ND.
+  Stat is Coef / 6**ND).
 
 % vim: ft=prolog et sw=2 sts=2
