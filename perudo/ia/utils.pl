@@ -62,7 +62,7 @@ statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, De), Stat) :-
 % TODO prendre en compte la mise précédente
 
 % Calcul de la probabilité sur une enchêre: passage aux pacos
-statEnchere(Des, N, rulesBet(Nb, De), rulesBet(NbChoisi, 1), Stat) :-
+statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, 1), Stat) :-
   De \= 1,
   statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
 
@@ -72,7 +72,19 @@ statEnchere(Des, N, rulesBet(Nb, De), dudo, Stat) :-
   Stat is 1 - Stat1.
 
 % Calcul de la probabilité sur une enchêre: calza
-% TODO
-%statEnchere(Des, N, rulesBet(Nb, De), calza, Stat)
+statEnchere(Des, NbTotal, rulesBet(Nb, De), calza, Stat) :-
+  compter(Des, De, NbMesDesCorrespondant),
+  NbDesManquants is max(0, Nb - NbMesDesCorrespondant),
+  length(Des, NbMesDes),
+  NbAutresDes is NbTotal - NbMesDes,
+
+  % Application de la formule:
+  %   * nT: nombre de dés totaux (autres dés) -> NbAutresDes
+  %   * nD: nombre de dés manquants -> NbDesManquants
+  % => p(calza) = (nD parmi nT) / 6**nD
+  nT = NbAutresDes,
+  nD = NbDesManquants,
+  coefBinomial(nT, nD, coef),
+  Stat is coef / 6**nD.
 
 % vim: ft=prolog et sw=2 sts=2

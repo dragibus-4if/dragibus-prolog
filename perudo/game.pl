@@ -4,7 +4,6 @@
 :- [player].
 :- [rules].
 :- [ia].
-:- [botMaster].
 
 % Idée d'IA : (TODO)
 % Point de confiance pour chaque joueur.
