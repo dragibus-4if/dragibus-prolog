@@ -5,44 +5,80 @@
 %   - la liste des coups possibles
 %
 % Signature d'une IA :
-%   ia<NomIA>(Dés, NbrTotalDeDés, rulesBet(Nb, Val), CoupsPossibles, CoupChoisi)
+%   ia<NomIA>(Player, NbrTotalDeDés, [(Player, rulesBet(Nb, Val))], CoupsPossibles, [(Coups, Estimation)])
 %
 % Description des paramètres :
-%   1) Liste des dés de l'IA
+%   1) Joueur de l'IA
 %   2) Nombre TOTAL de dés (joueur IA compris)
-%   3) Mise précédente
+%   3) Liste des mises précédentes associés à son joueur
 %   4) Liste des coups possibles
-%   5) Coup choisi par l'IA
+%   5) Liste des coups avec une estimation entre 0 et 1 de l'importance du coup.
+
+:- use_module(library(apply)).
 
 :- [ia/ivre].
 :- [ia/debile].
 :- [ia/stats].
 :- [ia/autiste].
+:- [ia/eleve].
 
-iaNbrDice(Dices, V, N) :-
-    include(==(V), Dices, L),
-    length(L, N).
+premier((X, _), X).
+second((_, Y), Y).
 
-% Fonction d'évaluation d'une mise par rapport au dé du joueur, du nombre total
-% de dé, de la mise precedente.
-iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
-    Bet = rulesBet(N, V),
-    Bet,
-    iaNbrDice(Dices, V, N1),
-    iaNbrDice(Dices, 1, N2),
-    ((V == 1) -> (NbrMe is N1, Div is 6) ; (NbrMe is N1 + N2, Div is 3)),
-    length(Dices, N_),
-    NbrOther is NbrDice - N_,
-    write('Nombre eu = '), write(NbrMe), write('\n'),
-    Lim is NbrOther / Div,
-    write('Limite statistique = '), write(Lim), write('\n'),
-    Value is Lim / (N - NbrMe).
+coef_premier(Coef, (X, B), (Y, B)) :-
+  Y is Coef * X.
+coef_second(Coef, (B, X), (B, Y)) :-
+  Y is Coef * X.
 
-iaJoue(Des, N, rulesBet(Nb, Val), CoupsPossibles, Coup) :-
-  write('Des = '), write(Des), write('\n'),
-  write('Nombre de dés au total = '), write(N), write('\n'),
-  write('Mise :'), write(Nb), write(' '), write(Val), write('\n'),
-  write('Liste des coups possibles : '), write(CoupsPossibles), write('\n'),
-  write('Que voulez vous jouer ? '), read(Indice), nth1(Indice, CoupsPossibles, Coup).
+applyIA(Player, N, PlayerNBets, CoupsPossibles, (Coef, IA), Estim) :-
+  call(IA, Player, N, PlayerNBets, CoupsPossibles, Estim_),
+  maplist(coef_second(Coef), Estim_, Estim).
+
+plus_second((X, A), (X, B), (X, N)) :-
+  N is A + B.
+
+% IA combinant une liste d'IA pour combiner leurs estimations
+iaCombine([], _, _, _, _, _) :- fail.
+iaCombine(LsIA, Player, N, PlayersNBets, CoupsPossibles, Estimations) :-
+  maplist(premier, LsIA, LsCoef),
+  sum_list(LsCoef, SumCoef),
+  GlobalCoef is 1.0 / SumCoef,
+  maplist(coef_premier(GlobalCoef), LsIA, LsIA_),
+  maplist(applyIA(Player, N, PlayersNBets, CoupsPossibles), LsIA_, LsEstim),
+  append([V0], LsEstim1, LsEstim),
+  foldl(maplist(plus_second), LsEstim1, V0, Estimations).
+
+% cmpEstimation((=), (_, V), (_, V)).
+cmpEstimation((>), (_, V1), (_, V2)) :- V1 @> V2.
+cmpEstimation((>), (_, V), (dudo, V)).
+cmpEstimation((>), (_, V), (dudo, V)).
+cmpEstimation((>), (rulesBet(N1, _), X), (rulesBet(N2, _), X)) :- N1 @< N2.
+cmpEstimation((>), (rulesBet(N, V1), X), (rulesBet(N, V2), X)) :- V1 @< V2.
+
+cmpEstimation((<), (_, V1), (_, V2)) :- V1 @< V2.
+cmpEstimation((<), (dudo, V), (_, V)).
+cmpEstimation((<), (calza, V), (_, V)).
+
+iaJoue(IA, Player, N, PlayersNBets, CoupsPossibles, Coup) :-
+  call(IA, Player, N, PlayersNBets, CoupsPossibles, E),
+  predsort(cmpEstimation, E, E2),
+  % write(E2), write('\n'),
+  last(E2, C),
+  C = (Coup, _), !.
+
+goIA :-
+  P1 = player('John', _, [1, 2, 2, 3, 4]),
+  P2 = player('Marc', _, [2, 3, 5, 6, 6]),
+  PnB = [(P1, rulesBet(2, 2))],
+  PnB = [(_, Bet)|_],
+  Game = [P1, P2],
+  gameNbrDice(Game, NbrDice),
+  rulesPossibleMoves(Bet, NbrDice, CoupsPossibles),
+  % CoupsPossibles = [rulesBet(10, 3), rulesBet(10, 4), dudo, calza],
+  IA = iaCombine([(0.3, iaIvre), (0.5, iaDebile), (2.0, iaEleve), (6.0, iaStats)]),
+  write('GO!!!!\n'),
+  iaJoue(IA, P2, 10, PnB, CoupsPossibles, Coup),
+  write(Coup),
+  write('\n').
 
 % vim: ft=prolog et sw=2 sts=2

@@ -16,6 +16,9 @@ playerCreate(Id, PlayFunc, NbDice, Res) :-
 playerId(P, Id) :-
   P = player(Id, _, _).
 
+playerFunc(Player, Func) :-
+  Player = player(_, Func, _).
+
 % Vrai si Res est un player(Id, L2) avec L2 une liste de la meme taille que
 % L et remplie de nombres aléatoires entre 1 et 6 compris.
 playerShuffle(player(Id, PlayerFunc, L), Res) :-
@@ -52,8 +55,8 @@ playerAddDice(P, NP) :-
   append([0], D, Dices),
   NP = player(Id, PF, Dices).
 
-playerPlay(Player, NbrTotalDice, OldBet, PossibleMoves, Move) :-
-  Player = player(_, PlayerFunc, Dice),
-  call(PlayerFunc, Dice, NbrTotalDice, OldBet, PossibleMoves, Move).
+playerPlay(Player, NbrTotalDice, OldBets, PossibleMoves, Move) :-
+  playerFunc(Player, Func),
+  iaJoue(Func, Player, NbrTotalDice, OldBets, PossibleMoves, Move).
 
 % vim: ft=prolog et sw=2 sts=2

@@ -37,11 +37,21 @@ majConfiances(PlayersNBets, Param) :-
 nbrDeAttenduPar(Player, V, (OtherPlayer, rulesBet(N, V1)), Res) :-
   playerId(Player, IdP),
   playerId(OtherPlayer, IdOP),
-  confiance(IdP, IdOP, C),
+  (confiance(IdP, IdOP, _) -> confiance(IdP, IdOP, C) ; C is 0),
   ((V = V1) -> Res is C * N ; Res is 0).
 
 nbrDeAttendu(Player, V, PlayersNBets, Res) :-
   maplist(nbrDeAttenduPar(Player, V), PlayersNBets, L),
   max_list(L, Res).
+
+eleveBet2Estimation(_, _, dudo, (dudo, 0)) :- !.
+eleveBet2Estimation(_, _, calza, (calza, 0)) :- !.
+eleveBet2Estimation(Player, PlayerNBets, rulesBet(N, V), Estimation) :-
+  (nbrDeAttendu(Player, V, PlayerNBets, Res) -> true ; Res = 0),
+  Est is 1.0 - (N - Res) / (30.0 - Res),
+  Estimation = (rulesBet(N, V), Est).
+
+iaEleve(Player, _, PlayersNBets, CoupsPossibles, Estimations) :-
+  maplist(eleveBet2Estimation(Player, PlayersNBets), CoupsPossibles, Estimations).
 
 % vim: ft=prolog et sw=2 sts=2
