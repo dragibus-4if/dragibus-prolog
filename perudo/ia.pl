@@ -5,14 +5,14 @@
 %   - la liste des coups possibles
 %
 % Signature d'une IA :
-%   ia<NomIA>(Dés, NbrTotalDeDés, rulesBet(Nb, Val), CoupsPossibles, CoupChoisi)
+%   ia<NomIA>(Player, NbrTotalDeDés, [(Player, rulesBet(Nb, Val))], CoupsPossibles, [(Coups, Estimation)])
 %
 % Description des paramètres :
-%   1) Liste des dés de l'IA
+%   1) Joueur de l'IA
 %   2) Nombre TOTAL de dés (joueur IA compris)
-%   3) Mise précédente
+%   3) Liste des mises précédentes associés à son joueur
 %   4) Liste des coups possibles
-%   5) Coup choisi par l'IA
+%   5) Liste des coups avec une estimation entre 0 et 1 de l'importance du coup.
 
 :- use_module(library(apply)).
 
@@ -22,24 +22,24 @@
 :- [ia/autiste].
 :- [ia/eleve].
 
-%iaCombineReele(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
+coef(Coef, (B, X), (B, Y)) :-
+  Y is Coef * X.
 
-% Exposition de l'interface: le deuxième paramètre étant une closure de la
-% liste d'IA (premier paramètre) appliquant toutes celles-ci
-%iaCombine(L, IA) :- IA = \D^N^C^CP^E^(iaCombineReele(L, D, N, C, CP, E)).
+applyIA(C, Player, N, PlayerNBets, CoupsPossibles, (Coef, IA), Estim) :-
+  call(IA, Player, N, PlayerNBets, CoupsPossibles, Estim_),
+  maplist(coef(C * Coef), Estim_, Estim).
+
+plus_first((X, A), (X, B), (X, N)) :-
+  N is A + B.
 
 % IA combinant une liste d'IA pour combiner leurs estimations
-iaCombine([], _, _, _, _, []).
-iaCombine([T|Q], Des, N, Coup, CoupsPossibles, ListeEstimations) :-
-  call(T, Des, N, Coup, CoupsPossibles, ET),
-  iaJoue(Q, Des, N, Coup, CoupsPossibles, EQ),
-  append([ET], EQ, Estimations).
-sommeEstimations([], L, L).
-sommeEstimations([T|Q], L, R) :- fail. % TODO
-sommeEstimations([T|Q], [], R) :-
-  sommeEstimations(Q, T, R).
-sommeEstimations(L, E) :-
-  sommeEstimations(L, [], E),
+iaCombine(LsIA, Player, N, PlayersNBets, CoupsPossibles, Estimations) :-
+  length(LsIA, N),
+  C is 1.0 / N,
+  maplist(applyIA(C, Player, N, PlayersNBets, CoupsPossibles), LsIA, LsEstim),
+  append([V0], LsEstim1, LsEstim),
+  foldl(maplist(plus_first), LsEstim1, V0, Estimations).
+
 % interface disponible
 iaJoue(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
   length(ListeEstimations, L),
