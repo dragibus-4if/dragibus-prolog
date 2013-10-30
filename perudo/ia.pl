@@ -14,36 +14,43 @@
 %   4) Liste des coups possibles
 %   5) Coup choisi par l'IA
 
+:- use_module(library(apply)).
+
 :- [ia/ivre].
 :- [ia/debile].
 :- [ia/stats].
 :- [ia/autiste].
 :- [ia/eleve].
 
-iaNbrDice(Dices, V, N) :-
-    include(==(V), Dices, L),
-    length(L, N).
+%iaCombineReele(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
 
-% Fonction d'évaluation d'une mise par rapport au dé du joueur, du nombre total
-% de dé, de la mise precedente.
-iaEvalBet(Dices, NbrDice, _, Bet, Value) :-
-    Bet = rulesBet(N, V),
-    Bet,
-    iaNbrDice(Dices, V, N1),
-    iaNbrDice(Dices, 1, N2),
-    ((V == 1) -> (NbrMe is N1, Div is 6) ; (NbrMe is N1 + N2, Div is 3)),
-    length(Dices, N_),
-    NbrOther is NbrDice - N_,
-    write('Nombre eu = '), write(NbrMe), write('\n'),
-    Lim is NbrOther / Div,
-    write('Limite statistique = '), write(Lim), write('\n'),
-    Value is Lim / (N - NbrMe).
+% Exposition de l'interface: le deuxième paramètre étant une closure de la
+% liste d'IA (premier paramètre) appliquant toutes celles-ci
+%iaCombine(L, IA) :- IA = \D^N^C^CP^E^(iaCombineReele(L, D, N, C, CP, E)).
 
-iaJoue(Des, N, rulesBet(Nb, Val), CoupsPossibles, Coup) :-
-  write('Des = '), write(Des), write('\n'),
-  write('Nombre de dés au total = '), write(N), write('\n'),
-  write('Mise :'), write(Nb), write(' '), write(Val), write('\n'),
-  write('Liste des coups possibles : '), write(CoupsPossibles), write('\n'),
-  write('Que voulez vous jouer ? '), read(Indice), nth1(Indice, CoupsPossibles, Coup).
+% IA combinant une liste d'IA pour combiner leurs estimations
+iaCombine([], _, _, _, _, []).
+iaCombine([T|Q], Des, N, Coup, CoupsPossibles, ListeEstimations) :-
+  call(T, Des, N, Coup, CoupsPossibles, ET),
+  iaJoue(Q, Des, N, Coup, CoupsPossibles, EQ),
+  append([ET], EQ, Estimations).
+sommeEstimations([], L, L).
+sommeEstimations([T|Q], L, R) :- fail. % TODO
+sommeEstimations([T|Q], [], R) :-
+  sommeEstimations(Q, T, R).
+sommeEstimations(L, E) :-
+  sommeEstimations(L, [], E),
+% interface disponible
+iaJoue(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
+  length(ListeEstimations, L),
+  iaCombine(IA, Des, N, Coup, CoupsPossibles, [], ListeEstimations),
+  sommeEstimations(ListeEstimations, EstimationsSommees),
+  fail. % TODO diviser chaque deuxième élément par L
+
+go :-
+  iaJoue([iaIvre, iaStats], [3, 3, 4], 6, rulesBet(3, 3), [calza, dudo, rulesBet(4, 3), rulesBet(3, 4), rulesBet(3, 5), rulesBet(3, 6), rulesBet(2, 1)] , E),
+  write(E).
+
+
 
 % vim: ft=prolog et sw=2 sts=2
