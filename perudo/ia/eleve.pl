@@ -44,8 +44,8 @@ nbrDeAttendu(Player, V, PlayersNBets, Res) :-
   maplist(nbrDeAttenduPar(Player, V), PlayersNBets, L),
   max_list(L, Res).
 
-eleveBet2Estimation(_, _, dudo, 0).
-eleveBet2Estimation(_, _, calza, 0).
+eleveBet2Estimation(_, _, dudo, (dudo, 0)) :- !.
+eleveBet2Estimation(_, _, calza, (calza, 0)) :- !.
 eleveBet2Estimation(Player, PlayerNBets, rulesBet(N, V), Estimation) :-
   nbrDeAttendu(Player, V, PlayerNBets, Res),
   Est is 1.0 - (N - Res) / (30.0 - Res),

@@ -25,20 +25,18 @@
 coef(Coef, (B, X), (B, Y)) :-
   Y is Coef * X.
 
-applyIA(C, Player, N, PlayerNBets, CoupsPossibles, (Coef, IA), Estim) :-
+applyIA(Player, N, PlayerNBets, CoupsPossibles, (Coef, IA), Estim) :-
   call(IA, Player, N, PlayerNBets, CoupsPossibles, Estim_),
-  maplist(coef(C * Coef), Estim_, Estim).
+  maplist(coef(Coef), Estim_, Estim).
 
-plus_first((X, A), (X, B), (X, N)) :-
+plus_second((X, A), (X, B), (X, N)) :-
   N is A + B.
 
 % IA combinant une liste d'IA pour combiner leurs estimations
 iaCombine(LsIA, Player, N, PlayersNBets, CoupsPossibles, Estimations) :-
-  length(LsIA, N),
-  C is 1.0 / N,
-  maplist(applyIA(C, Player, N, PlayersNBets, CoupsPossibles), LsIA, LsEstim),
+  maplist(applyIA(Player, N, PlayersNBets, CoupsPossibles), LsIA, LsEstim),
   append([V0], LsEstim1, LsEstim),
-  foldl(maplist(plus_first), LsEstim1, V0, Estimations).
+  foldl(maplist(plus_second), LsEstim1, V0, Estimations).
 
 % interface disponible
 iaJoue(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
@@ -47,10 +45,17 @@ iaJoue(IA, Des, N, Coup, CoupsPossibles, Estimations) :-
   sommeEstimations(ListeEstimations, EstimationsSommees),
   fail. % TODO diviser chaque deuxième élément par L
 
-go :-
-  iaJoue([iaIvre, iaStats], [3, 3, 4], 6, rulesBet(3, 3), [calza, dudo, rulesBet(4, 3), rulesBet(3, 4), rulesBet(3, 5), rulesBet(3, 6), rulesBet(2, 1)] , E),
+goIA :-
+  playerCreate(('John', _), P1),
+  playerCreate(('Marc', _), P2),
+  PnB = [(P1, rulesBet(10, 2))],
+  PnB = [(_, Bet)|_],
+  Game = [P1, P2],
+  gameNbrDice(Game, NbrDice),
+  rulesPossibleMoves(Bet, NbrDice, CoupsPossibles),
+  IA = iaCombine([(0.1, iaEleve), (0.9, iaStats)]),
+  write('GO!!!!\n'),
+  call(IA, P2, 10, PnB, CoupsPossibles, E),
   write(E).
-
-
 
 % vim: ft=prolog et sw=2 sts=2
