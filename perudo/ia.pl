@@ -48,27 +48,34 @@ iaCombine(LsIA, Player, N, PlayersNBets, CoupsPossibles, Estimations) :-
   append([V0], LsEstim1, LsEstim),
   foldl(maplist(plus_second), LsEstim1, V0, Estimations).
 
-cmpEstimation((=), (_, V), (_, V)).
-cmpEstimation((<), (_, V1), (_, V2)) :- V1 @< V2.
+% cmpEstimation((=), (_, V), (_, V)).
 cmpEstimation((>), (_, V1), (_, V2)) :- V1 @> V2.
+cmpEstimation((>), (_, V), (dudo, V)).
+cmpEstimation((>), (_, V), (dudo, V)).
+cmpEstimation((>), (rulesBet(N1, _), X), (rulesBet(N2, _), X)) :- N1 @< N2.
+cmpEstimation((>), (rulesBet(N, V1), X), (rulesBet(N, V2), X)) :- V1 @< V2.
+
+cmpEstimation((<), (_, V1), (_, V2)) :- V1 @< V2.
+cmpEstimation((<), (dudo, V), (_, V)).
+cmpEstimation((<), (calza, V), (_, V)).
 
 iaJoue(IA, Player, N, PlayersNBets, CoupsPossibles, Coup) :-
   call(IA, Player, N, PlayersNBets, CoupsPossibles, E),
   predsort(cmpEstimation, E, E2),
-  write(E2), write('\n'),
+  % write(E2), write('\n'),
   last(E2, C),
   C = (Coup, _), !.
 
 goIA :-
-  playerCreate(('John', _), P1),
-  playerCreate(('Marc', _), P2),
-  PnB = [(P1, rulesBet(3, 6))],
+  P1 = player('John', _, [1, 2, 2, 3, 4]),
+  P2 = player('Marc', _, [2, 3, 5, 6, 6]),
+  PnB = [(P1, rulesBet(2, 2))],
   PnB = [(_, Bet)|_],
   Game = [P1, P2],
   gameNbrDice(Game, NbrDice),
   rulesPossibleMoves(Bet, NbrDice, CoupsPossibles),
   % CoupsPossibles = [rulesBet(10, 3), rulesBet(10, 4), dudo, calza],
-  IA = iaCombine([(0.0, iaEleve), (9.0, iaStats)]),
+  IA = iaCombine([(0.3, iaIvre), (0.5, iaDebile), (2.0, iaEleve), (6.0, iaStats)]),
   write('GO!!!!\n'),
   iaJoue(IA, P2, 10, PnB, CoupsPossibles, Coup),
   write(Coup),
