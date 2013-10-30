@@ -18,17 +18,17 @@
 
 go :-
   gameCreate([('John', iaIvre),
-    ('Marc', iaIvre),
+    ('Marc', iaStats),
     ('Luke', iaIvre),
     ('Lisa', iaIvre),
     ('Jule', iaIvre)]).
 
 % Toujours vrai, affiche les informations sur le jeu Game.
-gameShow(_).
-% gameShow(Game) :-
-  % write('Game : '),
-  % write(Game),
-  % write('\n').
+% gameShow(_).
+gameShow(Game) :-
+  write('Game : '),
+  write(Game),
+  write('\n').
 
 % Crée un jeu et le lance en créant les joueurs données dans la liste Names.
 % Faux et arrete si la liste des noms comporte des doublons.

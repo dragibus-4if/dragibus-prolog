@@ -47,7 +47,7 @@ nbrDeAttendu(Player, V, PlayersNBets, Res) :-
 eleveBet2Estimation(_, _, dudo, (dudo, 0)) :- !.
 eleveBet2Estimation(_, _, calza, (calza, 0)) :- !.
 eleveBet2Estimation(Player, PlayerNBets, rulesBet(N, V), Estimation) :-
-  nbrDeAttendu(Player, V, PlayerNBets, Res),
+  (nbrDeAttendu(Player, V, PlayerNBets, Res) -> true ; Res = 0),
   Est is 1.0 - (N - Res) / (30.0 - Res),
   Estimation = (rulesBet(N, V), Est).
 
