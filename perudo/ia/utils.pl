@@ -82,9 +82,9 @@ statEnchere(Des, NbTotal, rulesBet(Nb, De), calza, Stat) :-
   %   * nT: nombre de dés totaux (autres dés) -> NbAutresDes
   %   * nD: nombre de dés manquants -> NbDesManquants
   % => p(calza) = (nD parmi nT) / 6**nD
-  nT = NbAutresDes,
-  nD = NbDesManquants,
-  coefBinomial(nT, nD, coef),
-  Stat is coef / 6**nD.
+  NT = NbAutresDes,
+  ND = NbDesManquants,
+  coefBinomial(NT, ND, Coef),
+  Stat is Coef / 6**ND.
 
 % vim: ft=prolog et sw=2 sts=2
