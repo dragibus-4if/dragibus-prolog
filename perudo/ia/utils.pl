@@ -1,8 +1,6 @@
 :- use_module(library(lists)).
 
-% Utile pour les paires [X, Y]
-premier([X, _], X).
-second([_, Y], Y).
+pair_set_second(V, E, (E, V)).
 
 % Répéte un prédicat jusqu'à ce qu'il soit vrai
 repeter.
@@ -14,14 +12,14 @@ compter([X|T], X, Y):- compter(T, X, Z), Y is 1 + Z.
 compter([X1|T], X, Z):- X1 \= X, compter(T, X, Z).
 
 % Calcul du coefficient binomial C(n, p)
-coefBinomial(_, 0, 1).
-coefBinomial(N, N, 1).
+coefBinomial(_, 0, 1) :- !.
+coefBinomial(N, N, 1) :- !.
 coefBinomial(N, P, B) :-
   N1 is N-1,
   P1 is P-1,
   coefBinomial(N1, P1, B1),
   coefBinomial(N1, P, B2),
-  B is B1 + B2.
+  B is B1 + B2, !.
 
 % Répartition binomiale
 repartitionBinomiale(N, Q, P, Stat) :-
@@ -61,13 +59,31 @@ statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, De), Stat) :-
   statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
 % TODO prendre en compte la mise précédente
 
+% Calcul de la probabilité sur une enchêre: passage aux pacos
+statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, 1), Stat) :-
+  De \= 1,
+  statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
+
 % Calcul de la probabilité sur une enchêre: dudo
 statEnchere(Des, N, rulesBet(Nb, De), dudo, Stat) :-
   statCoup(Des, N, rulesBet(Nb, De), Stat1),
   Stat is 1 - Stat1.
 
 % Calcul de la probabilité sur une enchêre: calza
-% TODO
-%statEnchere(Des, N, rulesBet(Nb, De), calza, Stat)
+statEnchere(Des, NbTotal, rulesBet(Nb, De), calza, Stat) :-
+  compter(Des, De, NbMesDesCorrespondant),
+  NbDesManquants is max(0, Nb - NbMesDesCorrespondant),
+  length(Des, NbMesDes),
+  NbAutresDes is NbTotal - NbMesDes,
+
+  (NbDesManquants > NbAutresDes -> Stat = 0 ;
+  % Application de la formule:
+  %   * nT: nombre de dés totaux (autres dés) -> NbAutresDes
+  %   * nD: nombre de dés manquants -> NbDesManquants
+  % => p(calza) = (nD parmi nT) / 6**nD
+  NT = NbAutresDes,
+  ND = NbDesManquants,
+  coefBinomial(NT, ND, Coef),
+  Stat is Coef / 6**ND).
 
 % vim: ft=prolog et sw=2 sts=2

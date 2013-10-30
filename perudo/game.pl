@@ -4,7 +4,6 @@
 :- [player].
 :- [rules].
 :- [ia].
-:- [botMaster].
 
 % Idée d'IA : (TODO)
 % Point de confiance pour chaque joueur.
@@ -18,13 +17,14 @@
 % A coupler avec le coefficient de confiance.
 
 go :-
-  gameCreate([('John', iaAutiste),
-    ('Marc', iaAutiste),
-    ('Luke', iaDebile),
-    ('Lisa', iaAutiste),
-    ('Jule', iaAutiste)]).
+  gameCreate([('John', iaIvre),
+    ('Marc', iaStats),
+    ('Luke', iaIvre),
+    ('Lisa', iaIvre),
+    ('Jule', iaIvre)]).
 
 % Toujours vrai, affiche les informations sur le jeu Game.
+% gameShow(_).
 gameShow(Game) :-
   write('Game : '),
   write(Game),
@@ -37,9 +37,9 @@ gameCreate([]) :- !, fail.
 gameCreate(Names) :-
   is_set(Names),
   maplist(playerCreate, Names, Game),
-  write('Creation de la partie\n'),
+  % write('Creation de la partie\n'),
   gameShow(Game),
-  gameNewTurn(Game).
+  gameNewTurn(Game), !.
 
 % Débute un nouveau tour à partir de l'état Game puis continue le jeu.
 gameInitNewTurn(Game) :-
@@ -49,47 +49,48 @@ gameInitNewTurn(Game) :-
 
 gameNewTurn([P]) :-
   playerId(P, X),
-  write(X),
-  write(' dit : Game over motherfucker\n'),
+  % write(X),
+  % write(' dit : Game over motherfucker\n'),
   write(X),
   write('\n'),
   !.
 
 gameNewTurn(Game) :-
-  write('Nouveau tour de jeu\n'),
+  % write('Nouveau tour de jeu\n'),
   gameShow(Game),
   gameNbrDice(Game, NbrDice),
   rulesPossibleMoves(Moves, NbrDice),
   nth1(1, Game, P),
   playerPlay(P, NbrDice, [], Moves, B),
   rulesMove(B),
-  gameTurn(Game, [B]).
+  gameTurn(Game, [(P, B)]).
 
-gameTurn(Game, [dudo, Bet|_]) :-
-  write('Tu bluff gros porc\n'),
+gameTurn(Game, [(_, dudo), (_, Bet)|_]) :-
+  % write('Tu bluff gros porc\n'),
   rulesDudo(Bet, Game, NGame),
   gameInitNewTurn(NGame),
   !.
 
-gameTurn(Game, [calza, Bet|_]) :-
-  write('J\'ai des boules moi\n'),
+gameTurn(Game, [(_, calza), (_, Bet)|_]) :-
+  % write('J\'ai des boules moi\n'),
   rulesCalza(Bet, Game, NGame),
   gameInitNewTurn(NGame),
   !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, [Bet|Bets]) :-
+gameTurn(Game, OldBets) :-
+  OldBets = [(_, Bet) | _],
   rulesNextPlayer(Game, NGame),
-  write('Au prochain de jouer avec la mise : '),
-  write(Bet),
-  write('\n'),
+  % write('Au prochain de jouer avec la mise : '),
+  % write(Bet),
+  % write('\n'),
   gameShow(NGame),
   gameNbrDice(NGame, NbrDice),
   rulesPossibleMoves(Bet, NbrDice, Moves),
   nth1(1, NGame, P),
-  playerPlay(P, NbrDice, [Bet|Bets], Moves, B),
+  playerPlay(P, NbrDice, OldBets, Moves, B),
   rulesMove(B),
-  gameTurn(NGame, [B,Bet|Bets]).
+  gameTurn(NGame, [(P, B)|OldBets]).
 
 % Vrai s'il ne reste qu'un seul joueur dans le jeu.
 gameIsOver(Game) :-
