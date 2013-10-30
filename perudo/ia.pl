@@ -18,6 +18,7 @@
 :- [ia/debile].
 :- [ia/stats].
 :- [ia/autiste].
+:- [ia/eleve].
 
 iaNbrDice(Dices, V, N) :-
     include(==(V), Dices, L),

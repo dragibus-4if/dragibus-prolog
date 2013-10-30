@@ -61,6 +61,11 @@ statEnchere(Des, N, rulesBet(_, De), rulesBet(NbChoisi, De), Stat) :-
   statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
 % TODO prendre en compte la mise précédente
 
+% Calcul de la probabilité sur une enchêre: passage aux pacos
+statEnchere(Des, N, rulesBet(Nb, De), rulesBet(NbChoisi, 1), Stat) :-
+  De \= 1,
+  statCoup(Des, N, rulesBet(NbChoisi, De), Stat).
+
 % Calcul de la probabilité sur une enchêre: dudo
 statEnchere(Des, N, rulesBet(Nb, De), dudo, Stat) :-
   statCoup(Des, N, rulesBet(Nb, De), Stat1),
