@@ -1,9 +1,21 @@
 :- use_module(library(lists)).
 
-:- [coefBinomial].
+% Accés aux paires
+premier((X, _), X).
+second((_, Y), Y).
 
-% Deuxième élément d'une paire
-pair_set_second(V, E, (E, V)).
+% Coefficient binomial C(n, p)
+% -> généré
+:- [coefBinomial].
+% -> calculé
+% coefBinomial(_, 0, 1) :- !.
+% coefBinomial(N, N, 1) :- !.
+% coefBinomial(N, P, B) :-
+%   N1 is N-1,
+%   P1 is P-1,
+%   coefBinomial(N1, P1, B1),
+%   coefBinomial(N1, P, B2),
+%   B is B1 + B2, !.
 
 % Compter le nombre d'occurences d'un élément dans une liste
 compter([], _, 0).
