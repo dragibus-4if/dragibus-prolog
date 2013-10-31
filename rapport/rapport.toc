@@ -1,5 +1,5 @@
 \select@language {french}
 \contentsline {section}{\numberline {1}G\IeC {\'e}n\IeC {\'e}alogie}{2}{section.1}
-\contentsline {section}{\numberline {2}Listes}{5}{section.2}
-\contentsline {section}{\numberline {3}Arithmetique}{8}{section.3}
-\contentsline {section}{\numberline {4}Ensembles}{9}{section.4}
+\contentsline {section}{\numberline {2}Listes}{4}{section.2}
+\contentsline {section}{\numberline {3}Arithmetique}{6}{section.3}
+\contentsline {section}{\numberline {4}Ensembles}{7}{section.4}
