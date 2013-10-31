@@ -1,5 +1,6 @@
 :- use_module(library(lists)).
 :- use_module(library(apply)).
+:- use_module(library(assoc)).
 
 :- [player].
 :- [rules].
@@ -16,13 +17,42 @@
 % Les IA qui apprennent vont donc pouvoir se faire plaisir.
 % A coupler avec le coefficient de confiance.
 
+init_assoc_id(Id, Assoc, NewAssoc) :-
+  put_assoc(Id, Assoc, 0, NewAssoc).
+
+add_win(Winner, Assoc, NewAssoc) :-
+  playerId(Winner, ID),
+  get_assoc(ID, Assoc, NbrWin),
+  NbrWin_ is NbrWin + 1,
+  get_assoc(ID, Assoc, NbrWin, NewAssoc, NbrWin_).
+
 go :-
-  gameCreate([('John', iaDebile),
-    ('Luke', iaDebile),
-    ('Marc', iaStats),
-    ('Lisa', iaDebile),
-    ('Jule', iaDebile),
-    ('Mike', iaStats)]).
+  go(1).
+
+go(N) :-
+  P1 = ('John', iaCombine([(0, iaDebile), (1, iaEleve), (0, iaStats), (0.6, iaIvre)])),
+  P2 = ('Mike', iaCombine([(0, iaDebile), (0, iaEleve), (1, iaStats), (0.0, iaIvre)])),
+  LsP = [P1, P2],
+
+  empty_assoc(Assoc_),
+  maplist(premier, LsP, LsID),
+  foldl(init_assoc_id, LsID, Assoc_, Assoc),
+
+  findall(W, (between(1, N, _), gameCreate(LsP, W)), Bag),
+  foldl(add_win, Bag, Assoc, NAssoc),
+  assoc_to_list(NAssoc, L),
+  maplist(writeln, L).
+  % gameCreate([('John', iaDebile),
+  %   ('Luke', iaDebile),
+  %   ('Marc', iaEleve),
+  %   ('Lisa', iaDebile),
+  %   ('Jule', iaDebile),
+  %   ('Mike', iaStats)]).
+
+% Toujours vrai, affiche les informations sur le jeu gagnant.
+gameShowWinner(Winner) :-
+  playerId(Winner, Name),
+  write(Name), write('\n').
 
 % Toujours vrai, affiche les informations sur le jeu Game.
 gameShow(_).
@@ -34,29 +64,23 @@ gameShow(_).
 % Crée un jeu et le lance en créant les joueurs données dans la liste Names.
 % Faux et arrete si la liste des noms comporte des doublons.
 % Faux si la liste est vide
-gameCreate([]) :- !, fail.
-gameCreate(Names) :-
+gameCreate([], _) :- !, fail.
+gameCreate(Names, Winner) :-
   is_set(Names),
   maplist(playerCreate, Names, Game),
   % write('Creation de la partie\n'),
   gameShow(Game),
-  gameNewTurn(Game), !.
+  gameNewTurn(Game, Winner), !.
 
 % Débute un nouveau tour à partir de l'état Game puis continue le jeu.
-gameInitNewTurn(Game) :-
+gameInitNewTurn(Game, Winner) :-
   include(playerIsAlive, Game, L),
   maplist(playerShuffle, L, NGame),
-  gameNewTurn(NGame).
+  gameNewTurn(NGame, Winner).
 
-gameNewTurn([P]) :-
-  playerId(P, X),
-  % write(X),
-  % write(' dit : Game over motherfucker\n'),
-  write(X),
-  write('\n'),
-  !.
+gameNewTurn([P], P) :- !.
 
-gameNewTurn(Game) :-
+gameNewTurn(Game, Winner) :-
   % write('Nouveau tour de jeu\n'),
   gameShow(Game),
   gameNbrDice(Game, NbrDice),
@@ -64,22 +88,29 @@ gameNewTurn(Game) :-
   nth1(1, Game, P),
   playerPlay(P, NbrDice, [], Moves, B),
   rulesMove(B),
-  gameTurn(Game, [(P, B)]).
+  gameTurn(Game, [(P, B)], Winner).
 
-gameTurn(Game, [(_, dudo), (_, Bet)|_]) :-
+gameEndTurn(OldBets) :-
+  majConfiances(OldBets, 0.01).
+
+gameTurn(Game, OldBets, Winner) :-
+  OldBets = [(_, dudo), (_, Bet) | _],
   % write('Tu bluff gros porc\n'),
   rulesDudo(Bet, Game, NGame),
-  gameInitNewTurn(NGame),
+  gameEndTurn(OldBets),
+  gameInitNewTurn(NGame, Winner),
   !.
 
-gameTurn(Game, [(_, calza), (_, Bet)|_]) :-
+gameTurn(Game, OldBets, Winner) :-
+  OldBets = [(_, calza), (_, Bet) | _],
   % write('J\'ai des boules moi\n'),
   rulesCalza(Bet, Game, NGame),
-  gameInitNewTurn(NGame),
+  gameEndTurn(OldBets),
+  gameInitNewTurn(NGame, Winner),
   !.
 
 % Un joueur parle à partir d'un état de jeu et d'une mise.
-gameTurn(Game, OldBets) :-
+gameTurn(Game, OldBets, Winner) :-
   OldBets = [(_, Bet) | _],
   rulesNextPlayer(Game, NGame),
   % write('Au prochain de jouer avec la mise : '),
@@ -91,7 +122,7 @@ gameTurn(Game, OldBets) :-
   nth1(1, NGame, P),
   playerPlay(P, NbrDice, OldBets, Moves, B),
   rulesMove(B),
-  gameTurn(NGame, [(P, B)|OldBets]).
+  gameTurn(NGame, [(P, B)|OldBets], Winner).
 
 % Vrai s'il ne reste qu'un seul joueur dans le jeu.
 gameIsOver(Game) :-

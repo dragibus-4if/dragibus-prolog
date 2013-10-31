@@ -1,3 +1,11 @@
+dist(dudo, Player, NbrPlayer, Dist) :-
+  % TODO
+  Dist = 1.
+
+dist(calza, Player, NbrPlayer, Dist) :-
+  % TODO
+  Dist = 1.
+
 dist(rulesBet(N, V), Player, NbrPlayer, Dist) :-
   rulesNbrDice([Player], V, NbrDice),
   N2 is N / NbrPlayer,
