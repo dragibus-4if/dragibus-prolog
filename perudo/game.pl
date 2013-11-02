@@ -26,12 +26,9 @@ add_win(Winner, Assoc, NewAssoc) :-
   NbrWin_ is NbrWin + 1,
   get_assoc(ID, Assoc, NbrWin, NewAssoc, NbrWin_).
 
-go :-
-  go(1).
-
-go(N) :-
-  P1 = ('John', iaCombine([(0, iaDebile), (1, iaEleve), (0, iaStats), (0.6, iaIvre)])),
-  P2 = ('Mike', iaCombine([(0, iaDebile), (0, iaEleve), (1, iaStats), (0.0, iaIvre)])),
+go(D1, E1, S1, I1, A1, D2, E2, S2, I2, A2, N) :-
+  P1 = ('John', iaCombine([(D1, iaDebile), (E1, iaEleve), (S1, iaStats), (I1, iaIvre)])),
+  P2 = ('Mike', iaCombine([(D2, iaDebile), (E2, iaEleve), (S2, iaStats), (I2, iaIvre)])),
   LsP = [P1, P2],
 
   empty_assoc(Assoc_),
@@ -41,7 +38,8 @@ go(N) :-
   findall(W, (between(1, N, _), gameCreate(LsP, W)), Bag),
   foldl(add_win, Bag, Assoc, NAssoc),
   assoc_to_list(NAssoc, L),
-  maplist(writeln, L).
+  % maplist(writeln, L),
+  true.
   % gameCreate([('John', iaDebile),
   %   ('Luke', iaDebile),
   %   ('Marc', iaEleve),
@@ -78,7 +76,8 @@ gameInitNewTurn(Game, Winner) :-
   maplist(playerShuffle, L, NGame),
   gameNewTurn(NGame, Winner).
 
-gameNewTurn([P], P) :- !.
+gameNewTurn([P], P) :-
+  gameShowWinner(P), !.
 
 gameNewTurn(Game, Winner) :-
   % write('Nouveau tour de jeu\n'),
