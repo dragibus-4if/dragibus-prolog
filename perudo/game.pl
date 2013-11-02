@@ -26,7 +26,22 @@ add_win(Winner, Assoc, NewAssoc) :-
   NbrWin_ is NbrWin + 1,
   get_assoc(ID, Assoc, NbrWin, NewAssoc, NbrWin_).
 
-go(D1, E1, S1, I1, D2, E2, S2, I2, N) :-
+go :-
+  current_prolog_flag(argv, Arguments),
+  append(_SytemArgs, [--|Args], Arguments), !,
+  go(Args),
+  halt.
+
+go([D1_, E1_, S1_, I1_, D2_, E2_, S2_, I2_, N_]) :-
+  atom_number(D1_, D1),
+  atom_number(E1_, E1),
+  atom_number(S1_, S1),
+  atom_number(I1_, I1),
+  atom_number(D2_, D2),
+  atom_number(E2_, E2),
+  atom_number(S2_, S2),
+  atom_number(I2_, I2),
+  atom_number(N_, N),
   P1 = ('John', iaCombine([(D1, iaDebile), (E1, iaEleve), (S1, iaStats), (I1, iaIvre)])),
   P2 = ('Mike', iaCombine([(D2, iaDebile), (E2, iaEleve), (S2, iaStats), (I2, iaIvre)])),
   LsP = [P1, P2],

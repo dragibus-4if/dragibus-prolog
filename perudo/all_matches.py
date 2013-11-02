@@ -39,9 +39,10 @@ def measure_matchup(coefs_both):
         print 'Match %s vs %s ignored' % (coefs_a, coefs_b)
         return
 
-    ratios = it.imap(str, it.chain(coefs_a, coefs_b))
-    sp_args = 'swipl -q -s game -t'.split()
-    sp_args.append('go(%s, %s)' % (', '.join(ratios), nb_games))
+    ratios = map(str, it.chain(coefs_a, coefs_b))
+    # sp_args = 'swipl -q -s game -t'.split()
+    # sp_args.append('go(%s, %s)' % (', '.join(ratios), nb_games))
+    sp_args = './game.exe -- '.split() + ratios + [str(nb_games)]
 
     # get win/loss for given player
     output = sp.check_output(sp_args, stderr=sp.PIPE)
