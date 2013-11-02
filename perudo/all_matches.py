@@ -29,6 +29,13 @@ size_filter = parsed_args.size_filter
 
 def measure_matchup(coefs_both):
     coefs_a, coefs_b = coefs_both
+    fname = 'results/%s_%s.csv' % ('-'.join(map(str, coefs_a)),
+            '-'.join(map(str, coefs_b)))
+
+    if os.path.exists(fname):
+        print 'Match %s vs %s ignored' % (coefs_a, coefs_b)
+        return
+
     ratios = it.imap(str, it.chain(coefs_a, coefs_b))
     sp_args = 'swipl -q -s game -t'.split()
     sp_args.append('go(%s, %s)' % (', '.join(ratios), nb_games))
@@ -51,12 +58,10 @@ def measure_matchup(coefs_both):
 
     # save results
     this_dir = os.path.dirname(os.path.realpath(__file__))
-    fname = 'results/%s_%s.csv' % ('-'.join(map(str, coefs_a)),
-            '-'.join(map(str, coefs_b)))
     with open(os.path.join(this_dir, fname), 'w') as fp:
-        fp.writelines(it.imap(lambda x: ' '.join(x), results))
+        fp.writelines(it.imap(lambda x: ' '.join(map(str, x)) + '\n', results))
     print 'Match %s vs %s, results: "%s"' % (coefs_a, coefs_b, fname)
 
 # run
-pool = mp.Pool()
+pool = mp.Pool(8)
 pool.map(measure_matchup, ((a, b) for a in ai_coefs for b in ai_coefs))
