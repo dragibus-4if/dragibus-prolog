@@ -9,25 +9,20 @@ import subprocess as sp
 
 ais = ['iaDebile', 'iaEleve', 'iaStats', 'iaIvre']
 
-# combinations for different matches
-nb_ais = len(ais)
-choices = [[int(i == j) for j in xrange(nb_ais)] for i in xrange(nb_ais)]
-ai_coefs = map(lambda x: x[0], it.combinations_with_replacement(choices, 1))
-
 # script params
 parser = argparse.ArgumentParser()
-parser.add_argument('nb_games', metavar='NB', type=int,
+parser.add_argument('nb_games', metavar='NB_GAMES', type=int,
         help='Number of games for each match')
 parser.add_argument('size_filter', metavar='FILTER', type=int,
         help='Size filter used for the low pass filter')
-parser.add_argument('nb_div', metavar='NB', type=int,
+parser.add_argument('nb_div', metavar='NB_SUBDIVS', type=int,
         help='Number of subdivision done')
 ref_name = 'John'
 parsed_args = parser.parse_args()
 
 # shortcuts for command-line args
-nb_games = parsed_args.nb_games
 size_filter = parsed_args.size_filter
+nb_games = parsed_args.nb_games
 nb_div = parsed_args.nb_div
 
 def measure_matchup(coefs_both):
@@ -66,6 +61,12 @@ def measure_matchup(coefs_both):
         fp.writelines(it.imap(lambda x: ' '.join(map(str, x)) + '\n', results))
     print 'Match %s vs %s, results: "%s"' % (coefs_a, coefs_b, fname)
 
+# combinations for different matches
+# - discrete
+nb_ais = len(ais)
+choices = [[int(i == j) for j in xrange(nb_ais)] for i in xrange(nb_ais)]
+ai_coefs = map(lambda x: x[0], it.combinations_with_replacement(choices, 1))
+# - continuous
 N = nb_div
 ls = []
 for d in xrange(N + 1):
@@ -81,8 +82,8 @@ for d in xrange(N + 1):
                 ls += [(d, e, s, 0)]
                 ls += [(d, e, s, 0.5)]
                 ls += [(d, e, s, 1)]
-
 ai_coefs = ls
-# run
+
+# run (via multiprocessing)
 pool = mp.Pool(8)
 pool.map(measure_matchup, ((a, b) for a in ai_coefs for b in ai_coefs))
