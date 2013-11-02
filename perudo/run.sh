@@ -2,12 +2,12 @@
 
 SWIPL=swipl
 MIN_VERSION=6.2.6
-VERSION=$($SWIPL --version | awk '{print $3}')
+#VERSION=$($SWIPL --version | awk '{print $3}')
 
-if [ "$VERSION" != "$MIN_VERSION" ]; then
-    echo "SWI-Prolog version $MIN_VERSION expected, found $VERSION"
-    exit 1
-fi
+#if [ "$VERSION" != "$MIN_VERSION" ]; then
+#    echo "SWI-Prolog version $MIN_VERSION expected, found $VERSION"
+#    exit 1
+#fi
 
 if [ $# -lt 8 ]; then
     echo "Have to be called with 8 or 9 arguments :"
