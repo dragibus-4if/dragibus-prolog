@@ -9,7 +9,7 @@ if [ "$VERSION" != "$MIN_VERSION" ]; then
     exit 1
 fi
 
-if [ $# < 10 ]; then
+if [ $# -lt 10 ]; then
     echo "Have to be called with 8 or 9 arguments :"
     echo "Usage : ./run.sh D1 E1 S1 I1 A1 D2 E2 S2 I2 A2 [N]"
     echo
