@@ -39,8 +39,7 @@ statCoup(Des, NbTotal, rulesBet(Nb, De), Stat) :-
     Stat = 1
   ;
     % coefficient de division (6 si paco, 3 sinon)
-    %(De == 1 -> Div = 6 ; Div = 3),
-    Div = 3,
+    (De == 1 -> Div = 6 ; Div = 3),
 
     % calcul de la stat à partir des stats individuelles
     N = NbAutresDes,
