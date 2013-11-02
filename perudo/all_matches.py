@@ -1,9 +1,11 @@
 #!/usr/bin/env python2.7
 
+import os
 import sys
-import subprocess as sp
-import itertools as it
 import argparse
+import itertools as it
+import multiprocessing as mp
+import subprocess as sp
 
 ais = ['iaDebile', 'iaEleve', 'iaStats', 'iaIvre']
 
@@ -21,23 +23,40 @@ parser.add_argument('size_filter', metavar='FILTER', type=int,
 ref_name = 'John'
 parsed_args = parser.parse_args()
 
-# subprocess call
+# shortcuts for command-line args
 nb_games = parsed_args.nb_games
 size_filter = parsed_args.size_filter
-for coefs_a, coefs_b in ((a, b) for a in ai_coefs for b in ai_coefs):
+
+def measure_matchup(coefs_both):
+    coefs_a, coefs_b = coefs_both
     ratios = it.imap(str, it.chain(coefs_a, coefs_b))
     sp_args = 'swipl -q -s game -t'.split()
     sp_args.append('go(%s, %s)' % (', '.join(ratios), nb_games))
+
+    # get win/loss for given player
     output = sp.check_output(sp_args, stderr=sp.PIPE)
-    lines = filter(None, output.split('\n'))
-    players = list(set(lines))
-    wins = map(lambda x: float(x == ref_name), lines)
+    output_lines = filter(None, output.split('\n'))
+    players = list(set(output_lines))
+    wins = map(lambda x: float(x == ref_name), output_lines)
 
     # low pass filter
-    ls = [0.0] * size_filter
+    results = []
     t = 0
-    for w in wins:
-        ls = ls[1:] + [w]
+    ls = [0.0] * size_filter
+    for val in wins:
+        ls = ls[1:] + [val]
         t += 1
         if t >= size_filter:
-            print t, sum(ls) / size_filter
+            results.append((t, sum(ls)/size_filter))
+
+    # save results
+    this_dir = os.path.dirname(os.path.realpath(__file__))
+    fname = 'results/%s_%s.csv' % ('-'.join(map(str, coefs_a)),
+            '-'.join(map(str, coefs_b)))
+    with open(os.path.join(this_dir, fname), 'w') as fp:
+        fp.writelines(it.imap(lambda x: ' '.join(x), results))
+    print 'Match %s vs %s, results: "%s"' % (coefs_a, coefs_b, fname)
+
+# run
+pool = mp.Pool()
+pool.map(measure_matchup, ((a, b) for a in ai_coefs for b in ai_coefs))
