@@ -1,5 +1,7 @@
-#!/bin/env python2.7
+#!/usr/bin/env python2.7
+
 import sys
+
 size_filter = int(sys.argv[1])
 ls = [0.0] * size_filter
 line = sys.stdin.readline()
