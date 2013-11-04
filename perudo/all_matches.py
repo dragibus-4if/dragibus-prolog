@@ -85,5 +85,5 @@ for d in xrange(N + 1):
 ai_coefs = ls
 
 # run (via multiprocessing)
-pool = mp.Pool(24)
+pool = mp.Pool()
 pool.map(measure_matchup, ((a, b) for a in ai_coefs for b in ai_coefs))
