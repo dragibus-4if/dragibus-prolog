@@ -1,19 +1,25 @@
 #!/usr/bin/env python2.7
-import glob
+
 import os
-for filename in glob.glob('./sum/*'):
-    os.remove(filename)
-for filename in glob.glob('./results/*_*.csv'):
-    s = 0
-    with open(filename, 'r') as file:
-        for line in file.readlines():
-            s += float(line.split(' ')[1])
-    wfilename = './sum/' + os.path.basename(filename).split('_')[0]
-    old_s = 0
-    if os.path.exists(wfilename):
-        with open(wfilename, 'r') as file:
-            line = file.readline()
-            if line:
-                old_s = float(line.split('\n')[0])
-    with open(wfilename, 'w') as file:
-        file.write(str(s + old_s))
+import glob
+import itertools as it
+import multiprocessing as mp
+
+this_dir = os.path.dirname(os.path.realpath(__file__))
+results = glob.glob(os.path.join(this_dir, 'results/*_*.csv'))
+
+def calculate_sum(fname):
+    target = os.path.basename(fname).split('_')[0]
+    with open(fname, 'r') as fp:
+        sum_ = sum(it.imap(lambda x: float(x.split(' ')[1]), fp.readlines()))
+    return target, sum_
+
+# run calculations
+pool = mp.Pool()
+results_sums = {}
+for target, sum_ in pool.imap(calculate_sum, results):
+    results_sums[target] = sum_ + results_sums.get(target, 0.)
+
+# output results
+for target, sum_ in results_sums.iteritems():
+    print target, sum_
