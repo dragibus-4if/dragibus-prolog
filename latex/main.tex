@@ -61,11 +61,9 @@
   % TODO formatter cette slide
 
   \begin{center}
-    \begin{large}
-      Joueur précédent : \textit{"Je pense qu'il y a douze 5"}
-      \\
-      \uncover<2>{Moi :\textit{"Je pense qu'il y a treize 5"}}
-    \end{large}
+    Joueur précédent : \textit{"Je pense qu'il y a douze 5"}
+    \\
+    \uncover<2>{Moi :\textit{"Je pense qu'il y a treize 5"}}
   \end{center}
 
   $\to$ la mise ne peut qu'\textbf{augmenter} au cours de la partie
@@ -76,13 +74,11 @@
 \begin{frame}
   \frametitle{Constat}
 
-  \begin{large}
-    À son tour, le joueur doit \textbf{évaluer} les différents coups possibles.
-    \\[1.5cm]
-    \begin{center}
-      \uncover<2>{\textit{Une IA devrait fonctionner de la même manière.}}
-    \end{center}
-  \end{large}
+  À son tour, le joueur doit \textbf{évaluer} les différents coups possibles.
+  \\[1.5cm]
+  \begin{center}
+    \uncover<2>{\textit{Une IA devrait fonctionner de la même manière.}}
+  \end{center}
 \end{frame}
 
 \begin{frame}
@@ -96,7 +92,7 @@
 
   \center{$ia(EtatJoueur, EtatJeu, CoupsPossibles) \to Evaluation$}
   \\[1cm]
-  \large L'IA n'est qu'une \textbf{fonction d'évaluation} de l'état du jeu.
+  \large L'IA est une \textbf{fonction d'évaluation} de l'état du jeu.
 \end{frame}
 
 \begin{frame}
@@ -105,13 +101,60 @@
   \begin{large}
     Permet de créer des IA complèxes à partir d'autres relativement simples.
     \\[1cm]
-    \uncover<2>{Simple combinaison linéaire avec des coefficients de
+    \uncover<2>{Combinaison linéaire avec des coefficients de
       \emph{poids}, correspondant à la prise en compte dans la décision
       finale.}
   \end{large}
 \end{frame}
 
 \section{Présentation des IA}
+
+\begin{frame}
+  \frametitle{Basiques}
+
+  \textbf{Stochastique}
+  \\
+  Fonctionnement : associe à chaque coup une estimation aléatoire.
+  \\
+  Résultat attendu : inattendu.
+  \\[1cm]
+  \textbf{Minimale}
+  \\
+  Fonctionnement : joue à son tour le coup le moins risqué.
+  \\
+  Résultat attendu : taux de victoire stable et moyen.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Probabiliste}
+
+  Fonctionnement : associe à chaque coup la probabilité qu'il soit présent.
+
+  Pour un nombre de dés $n$ "inconnus", la probabilité $P(q)$ qu'il y ait
+  \emph{au moins} la quantité $q$ de la valeur souhaitée est de :
+
+  $$
+  \sum\limits_{x=q}^n C(n, x) \cdot (1/6)^x \cdot (5/6)^{n-x}
+  $$
+
+  Où C(n, q) est le coefficient binomial (q parmi n).
+  \\[1cm]
+
+  Résultat attendu : taux de victoire stable et élevé.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Apprentissage}
+
+  Fonctionnement : associe à chaque joueur un indice de confiance maintenu au
+  cours de la partie. Correspond au taux de "bluff" du joueur, calculé à chaque
+  fin de tour par la distance entre les mises du joueur et son jeu réel. L'IA
+  considèrera que si un joueur a une confiance de $C$ et a misé une mise de
+  $Nb$ dés il y a en réalité $C \cdot Nb$ dés, et prendra la valeur maximale
+  pour tous les joueurs.
+  \\[1cm]
+  Résultat attendu : croissance du taux de victoire au cours du temps.
+\end{frame}
 
 \section{Résultats et observations}
 
