@@ -85,19 +85,19 @@
 On crééra une base de connaissances en spécifiant les relations "parent"
 directes. parent(X, Y) étant vrai si X est le parent de Y. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/parent.pl}
+    \lstinputlisting{../genealogie/parent.pl}
 \end{DDbox}
 
 Définition du lien grand-parent par une propagation de la relation parent sur 2
 niveaux. grandParent(X, Y) est vrai si X est le grand parent de Y. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/grandParent.pl}
+    \lstinputlisting{../genealogie/grandParent.pl}
 \end{DDbox}
 
 Définition du lien ancêtre par une propagation récursive sur plusieurs
 niveaux, jusqu'à satisfaction. ancetre(X, Y) est vrai si X est un ancetre de Y. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/ancetre.pl}
+    \lstinputlisting{../genealogie/ancetre.pl}
 \end{DDbox}
 
 Définition de la liste des ancêtres à partir d'un élément de la
@@ -110,7 +110,7 @@ descendants(X, L) est vrai si L est l'ensemble des descendants de X. \\
 Dans ces deux prédicats, X ne peut pas être déterminée à partir
 de L, et donc ne peut pas être une variable. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/ancetres.pl}
+    \lstinputlisting{../genealogie/ancetres.pl}
 \end{DDbox}
 
 Définition de la relation frère-soeur complète en partant du
@@ -119,21 +119,21 @@ relation n'est pas réflexive, une personne ne pouvant pas être
 son propre frère-soeur. frereSoeur(X, Y) est vrai si X et Y ont
 le meme parent (donc sont frère-soeur). \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/frereSoeur.pl}
+    \lstinputlisting{../genealogie/frereSoeur.pl}
 \end{DDbox}
 
 Définition de la relation oncle-tante par une relation
 frère-soeur pour un parent. oncleTante(X, Y) est vrai si X est
 l'oncle (ou la tante) de Y. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/oncleTante.pl}
+    \lstinputlisting{../genealogie/oncleTante.pl}
 \end{DDbox}
 
 Définition de la relation cousin par une relation frère-sœur
 entre deux parents.  cousin(X, Y) est vrai si X et Y sont cousin
 (càd que leur parent sont freres). \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/genealogie/cousin.pl}
+    \lstinputlisting{../genealogie/cousin.pl}
 \end{DDbox}
 
 % \subsubsection{Tests}
@@ -148,33 +148,33 @@ element(X, L, LprivX) est vrai si L/X est une liste composé des
 X n'est pas dans L, alors le prédicat est faux.  Les trois
 paramètres peuvent etre des variables. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/liste/element.pl}
+    \lstinputlisting{../liste/element.pl}
 \end{DDbox}
 
 extract(L1, L2) est vrai si L2 est un sous ensemble de L1. Les
 deux paramètres peuvent etre des variables. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/liste/extract.pl}
+    \lstinputlisting{../liste/extract.pl}
 \end{DDbox}
 
 concat(L1, L2, L1nL2) est vrai si L1nL2 est la concaténation de L1
 et L2. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/liste/concat.pl}
+    \lstinputlisting{../liste/concat.pl}
 \end{DDbox}
 
 inv(L1, L2) est vrai si L1 est l'inverse de L2. On remarque que si
 L1 n'est pas une variable et que L2 en est une, le prédicat ne se
 termine pas. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/liste/inv.pl}
+    \lstinputlisting{../liste/inv.pl}
 \end{DDbox}
 
 subsAll(E, X, L1, L2) est vrai si L2 est la liste L1 avec les
 éléments E remplacés par des X. Dans le cas ou E est une variable,
 il prend la première valeur de L1. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/liste/subsAll.pl}
+    \lstinputlisting{../liste/subsAll.pl}
 \end{DDbox}
 
 % \subsubsection{Tests}
@@ -188,7 +188,7 @@ element(Idx, X, L) est vrai si X est à la position Idx dans L (en
 commençant à compter à partir de 1). On doit passer par une
 fonction element/4 pour intégrer un accumulateur en paramètre. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/arithmetique/element.pl}
+    \lstinputlisting{../arithmetique/element.pl}
 \end{DDbox}
 
 % \subsubsection{Tests}
@@ -205,14 +205,14 @@ utiliser un accumulateur en paramètre. Egalement, on définit
 simplement un prédicat element/2 qui est vrai lorsqu'un élément X
 est dans une liste L. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/ensemble/list2ens.pl}
+    \lstinputlisting{../ensemble/list2ens.pl}
 \end{DDbox}
 
 ensemble(L) est vrai quand L est un ensemble, et donc ne contient
 pas de doublons. On réutilise le prédicat précédemment fait
 list2ens. \\
 \begin{DDbox}{\linewidth}
-    \lstinputlisting{../exercice/ensemble/ensemble.pl}
+    \lstinputlisting{../ensemble/ensemble.pl}
 \end{DDbox}
 
 % \subsection{Test}
