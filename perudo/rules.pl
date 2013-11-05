@@ -36,6 +36,7 @@ rulesNbrDicePalifico(Players, Val, Nbr) :-
 
 rulesPossibleMove(NbrDice, rulesBet(N, V)) :-
   between(2, 6, V),
+  between(2, 30, N),
   rulesBet(N, V, NbrDice).
 
 rulesPossibleMove(rulesBet(_, _), _, dudo).
