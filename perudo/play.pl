@@ -4,9 +4,11 @@ readline(L) :-
   read_line_to_codes(user_input, Input),
   string_to_atom(Input, L).
 
-enumFold(Elem, (OldIdx, _), (Idx, Elem)) :-
+tuple_zero(E, (E, 0)).
+enumFold(Elem, Old, [(Idx, Elem)|Old]) :-
+  Old = [(OldIdx, _)|_],
   Idx is OldIdx + 1.
-playFunc(Player, N, [], CoupsPossibles, [(Coup, 1)|Q]) :-
+playFunc(Player, N, [], CoupsPossibles, Eval) :-
   playerDices(Player, Dice),
   write('Il y a '), write(N), write(' dés\n'),
   write('Vos des : '), write(Dice), write('\n'),
@@ -14,15 +16,17 @@ playFunc(Player, N, [], CoupsPossibles, [(Coup, 1)|Q]) :-
   readline(_),
 
   writeln('Coups possibles :'),
-  append([P], L_, CoupsPossibles_),
+  append([P], L_, CoupsPossibles),
   foldl(enumFold, L_, [(1, P)], CoupsPossibles_),
-  writeln('Appuyez sur entrée pour continuer'),
-  readline(_),
+  maplist(writeln, CoupsPossibles_),
 
   write('Coup ? '),
   readline(StrCoup),
   atom_number(StrCoup, ICoup),
-  nth1(ICoup, CoupsPossibles, Coup).
+  maplist(tuple_zero, CoupsPossibles, Eval_),
+  nth1(ICoup, CoupsPossibles, Coup),
+  select((Coup, 0), Eval_, (Coup, 1), Eval).
+
 playFunc(Player, N, [(_, Mise)|_], CoupsPossibles, Estimations) :-
   write('La mise est de '), write(Mise), write('\n'),
   playFunc(Player, N, [], CoupsPossibles, Estimations).
