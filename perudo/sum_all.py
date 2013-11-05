@@ -6,7 +6,7 @@ import itertools as it
 import multiprocessing as mp
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
-results = glob.glob(os.path.join(this_dir, 'results/*_*.csv'))
+results = glob.glob(os.path.join(this_dir, 'data/results/*_*.csv'))
 
 def calculate_sum(fname):
     target = os.path.basename(fname).split('_')[0]
