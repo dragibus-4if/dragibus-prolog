@@ -27,7 +27,7 @@ nb_div = parsed_args.nb_div
 
 def measure_matchup(coefs_both):
     coefs_a, coefs_b = coefs_both
-    fname = 'results/%s_%s.csv' % ('-'.join(map(str, coefs_a)),
+    fname = 'data/results/%s_%s.csv' % ('-'.join(map(str, coefs_a)),
             '-'.join(map(str, coefs_b)))
 
     if os.path.exists(fname):
